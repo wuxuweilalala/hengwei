@@ -1,0 +1,90 @@
+//============== RESET ==============//
+body,
+p,
+ul,
+li,
+dt,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+ul,
+li,
+dd {
+  list-style: none;
+}
+img {
+  border: none;
+  outline: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  color: inherit;
+}
+input {
+  outline: none;
+}
+em {
+  font-style: normal;
+}
+html {
+  height: 100%;
+}
+body {
+  position: relative;
+  font: 12px/1.5 'microsoft yahei', arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+input,
+textarea,
+button,
+select {
+  font-size: 1em;
+  font-family: inherit;
+}
+.scroll {
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: #eee;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: #ddd;
+  }
+}
+//============== RESET ==============//
+.hidden {
+  display: none !important;
+}
+// ========== ie8会忽略掉包含:disabled的selector，所以这里分开写 =============//
+.disabled {
+  cursor: default;
+  user-select: none;
+}
+:disabled {
+  cursor: default;
+  user-select: none;
+}
