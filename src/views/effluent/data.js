@@ -150,12 +150,13 @@ function pie3(data) {
 
 // 主要污染物饼状图
 function pieLeft(data) {
-    // console.log(data, '主要污染物饼状图')
+    console.log(data, '主要污染物饼状图11111111111111111111')
     let value = 100
     let datas = []
+    // console.log(data)
     data.value.forEach((item, index) => {
         datas.push({
-            value: item.replace('%', '') * value,
+            value: 10,
             name: data.name[index]
         }, {
             value: '40', // 调整间隔
@@ -175,7 +176,7 @@ function pieLeft(data) {
             }
         })
     });
-    // console.log(datas,'datas')
+    console.log(datas,'datas')
     let colors = ["rgb(0,154,255)", "#5fede1", "#fe7d44", "#ffffff"];
     let legendData = [];
     for (var j = 0; j < datas.length; j++) {
@@ -275,8 +276,9 @@ function pieLeft(data) {
 
 // 污染物企业
 function iconogram3(data) {
+    console.log('污染物企业',data.value=30)
     let color = ''
-    if (data.value < 10) {
+    if (data.value < 20) {
         color = new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
             offset: 0,
             color: '#00f0ff'
@@ -284,7 +286,7 @@ function iconogram3(data) {
             offset: 1,
             color: '#009aff'
         }])
-    } else if (data.value >= 10 && data.value < 30) {
+    } else if (data.value >= 20 && data.value < 50) {
         color = new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
             offset: 0,
             color: '#ffbb00'
@@ -306,7 +308,7 @@ function iconogram3(data) {
         grid: {
             left: 4,
             // top: 2, // 设置条形图的边距
-            // right: 2,
+            right: 10,
             // bottom: 2,
             // containLabel: true
         },
@@ -346,14 +348,14 @@ function iconogram1(data) {
         name: "管控",
         value: value
     }]; // 类别
-    var total = maxValue || 1000; // 数据总数
+    var total = maxValue || 100; // 数据总数
     var datas = [];
     category.forEach(value => {
         datas.push(value.value);
     });
     var alltotal = [];
     category.forEach(() => {
-        alltotal.push(maxValue || 1000);
+        alltotal.push(maxValue || 100);
     });
     var option = {
         // backgroundColor: '#071347',
@@ -828,6 +830,7 @@ function pie2(data) {
 
 // 监控上传图
 function pieRight(data) {
+    let max = 0
     let maxValue = data[2].reduce((total, num) => {
         return total * 1 + num * 1;
     });
@@ -838,7 +841,10 @@ function pieRight(data) {
             value: data[2][index] * 1
         })
     });
-    // console.log('pieRight',data)
+    data[2].forEach(num => {
+        max =  num > max ?  num : max
+    })
+    console.log('pieRight',data[2],trafficWay,max)
     var data = [];
     var innerData=[];
     var color = ['rgb(254,125,68)', 'rgb(0,154,255)', 'rgb(255,255,255)'];
@@ -856,7 +862,7 @@ function pieRight(data) {
                 }
             }
         }, {
-            value: '25', // 调整间隔
+            value: '1', // 调整间隔
             name: '',
             itemStyle: {
                 normal: {
@@ -885,7 +891,7 @@ function pieRight(data) {
                 }
             }
         }, {
-            value: '25', // 调整间隔
+            value: '1', // 调整间隔
             name: '',
             itemStyle: {
                 normal: {
@@ -973,18 +979,27 @@ export let popTable = [
     {
         name: "序号",
         width: "4vw",
+        style: {
+            width: "2vw",
+        }
     },
     {
         name: "企业名称",
-        width: "12vw",
+        width: "9vw",
+        style: {
+            width: "10vw",
+        }
     },
     {
         name: "水平衡偏差类型",
         width: "8vw",
+        style: {
+            width: "6vw",
+        }
     },
     {
         name: "预警状态",
-        width: "4vw",
+        width: "6vw",
         isGrade:true,
         textArr:['一般污染','中度污染','重度污染']
     }

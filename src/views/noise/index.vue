@@ -8,7 +8,7 @@
           <div class="waterPolo flex">
             <div class="polo">
               <div class="poloBox">
-                <WaterPolo w="5vw" h="5vw" :value="airQualityObj.noiseChartVal" :text="airQualityObj.noiseGrade"/>
+                <WaterPolo w="4.06vw" h="4.06vw" :value="airQualityObj.noiseChartVal" :text="airQualityObj.noiseGrade"/>
               </div>
               <div class="bg_img"></div>
               <div class="gradeText">{{airQualityObj.noiseGrade}}</div>
@@ -27,7 +27,7 @@
         <!--         监测区域内噪声等级占比情况-->
         <div class="areaWarnInfo bg_c lineshadow">
           <chart-title :title="'监测区域内噪声等级占比情况'" w="60%"/>
-          <ul>
+          <ul v-if="airGradeList">
             <li class="pictorialBarItem" v-for="(item,index) in airGradeList" :key="index">
               <div class="f_r_between">
                 <div>{{item.areaName}}</div>
@@ -46,12 +46,12 @@
         <!--        噪声监测实时数据-->
         <div class="noisedata_real bg_c lineshadow">
           <chart-title :title="'噪声监测实时数据'" w="40%"/>
-          <TableComponent :tableHeaderList="nr_headerList" :tableOption="tableOption" :data="nr_spListList" />
+          <TableComponent :tableHeaderList="nr_headerList" :tableOption="tableOption_2" :data="nr_spListList" />
         </div>
         <!--        功能区噪声标准及实际监测情况对照-->
         <div class="noiseContrast bg_c lineshadow">
           <chart-title :title="'功能区噪声标准及实际监测情况对照'" w="40%"/>
-          <TableComponent :tableHeaderList="nc_headerList" :tableOption="tableOption" :data="nc_spListList" />
+          <TableComponent :tableHeaderList="nc_headerList" :tableOption="tableOption_1" :data="nc_spListList" />
         </div>
       </div>
     </page-layout>
@@ -79,7 +79,7 @@ import ChartTitle from "../../components/ChartTitle";
 import TableComponent from "../../components/common/TableComponent";
 import WaterPolo from "../../components/WaterPolo";
 import {
-  fi_headerList,wi_headerList,nc_headerList,nr_headerList,tableOption
+  fi_headerList,wi_headerList,nc_headerList,nr_headerList,tableOption,tableOption_1,tableOption_2
 } from './data'
 import TerritoryClass from "../../components/TerritoryClass";
 import PictorialBar from "../../components/PictorialBar";
@@ -105,12 +105,14 @@ export default {
       nc_headerList:nc_headerList,
       nr_headerList:nr_headerList,
       tableOption:tableOption,
+      tableOption_1:tableOption_1,
+      tableOption_2:tableOption_2,
       nr_spListList:[],
       nc_spListList:[],
       wi_spListList:[],
       fi_spListList:[],
       airQualityObj: null,
-      airGradeList:[],
+      airGradeList:null,
       airQualityTable:null,
       showAQI:false,
       showTable:false
@@ -172,7 +174,7 @@ export default {
       this.nc_spListList = this.matchArr(nc,1)
       this.wi_spListList = this.matchArr(wi,2)
       this.fi_spListList = this.matchArr(fi,3)
-      console.log('this.nr_spListList ',this.wi_spListList )
+      // console.log('this.nr_spListList ',this.wi_spListList )
     },
     matchArr(arr,index) {
       let newarr = []
@@ -202,6 +204,7 @@ export default {
     width: 100%;
     padding: 2.3vh 1vw 2.5vh;
     box-sizing: border-box;
+    font-family: SourceHanSansCN-Regular;
   }
   .bg_c{
     padding: 0 1vw;
@@ -271,9 +274,10 @@ export default {
       margin-bottom: 2.04vh;
       /*background-color: rgba(15, 19, 32, 0.8);*/
       .poloBox{
-        width: 5vw;
-        height: 5vw;
-        background-size: 100%;
+        width: 4.06vw;
+        height: 4.06vw;
+        background-size: 100% 100%;
+        margin: 1vh 0 0 1vw;
         background-repeat: no-repeat;
         background-image: url("../../assets/image/environment/circle@2x.png");
       }
@@ -304,7 +308,6 @@ export default {
     .bg_img{
       position: absolute;
       right: -0.25vw;
-      top: -1vh;
       width: 3.9vw;
       height: 9.5vh;
       background-size: 100%;

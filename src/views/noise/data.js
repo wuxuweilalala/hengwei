@@ -1,4 +1,4 @@
-export let tableOption= {
+let option = {
     tableStyle: {
         height: "16.1vh",
         width: "100%",
@@ -10,42 +10,92 @@ export let tableOption= {
     tableTbodyStyle: {
         width: "100%",
         height: "16.1vh"
-    },
-    tableTrstyle: {},
-    isTableHeaderLine: true, // 表头分割线是否使用
-    tableHeaderLine: `<div class="siderlist_header1"></div>` // dom字符串
+    }
 }
+export let tableOption = option
+
+let option_1 = {
+    tableStyle: {
+        height: "23.1vh",
+        width: "100%",
+        margin: "0 auto"
+    }, // 表格样式
+    tableHeaderStyle: {
+        fontSize:'0.63vw'
+    },
+    tableTbodyStyle: {
+        width: "100%",
+        height: "18.1vh"
+    }
+}
+export let tableOption_1 = option_1
+
+let option_2 = {
+    tableStyle: {
+        height: "25.1vh",
+        width: "100%",
+        margin: "0 auto"
+    }, // 表格样式
+    tableHeaderStyle: {
+        fontSize:'0.63vw'
+    },
+    tableTbodyStyle: {
+        width: "100%",
+        height: "20.1vh"
+    }
+ }
+export let tableOption_2 = option_2
+
 //噪声超标预警信息
 export let wi_headerList = [
     {
         name: "序号",
         width: "4vw",
+        style:{
+            marginLeft:'0.5vw',
+            width:'1.5vw'
+        }
     },
     {
         name: "监控点名称",
         width: "9vw",
+        style:{
+            width:'10vw'
+        }
     },
     {
         name: "可疑因子",
-        width: "9vw",
+        width: "6vw",
+        style:{
+            marginLeft: '1vw',
+            width: "5vw",
+        }
     },
     {
         name: "检测值",
-        width: "9vw",
+        width: "6vw",
+        style:{
+            marginLeft: '1vw',
+            width:'5vw'
+        }
     },
     {
         name: "预警状态",
-        width: "9vw",
-        isGrade:true,
-        textArr:['一般污染','中度污染','严重污染']
+        width: "7vw",
+        isNoiseGrade:true,
+        textArr:['白色污染','黄色污染','红色污染'],
+        style:{
+            width:'6vw',
+            // paddingLeft:'1vw'
+        }
     },
     {
         name: "可疑开始时间",
-        width: "10vw",
+        width: "7vw",
     },
     {
         name: "可疑结束时间",
-        width: "6vw",
+        width: "8vw",
     }
 ]
 //噪声超标预报信息
@@ -53,33 +103,57 @@ export let fi_headerList = [
     {
         name: "序号",
         width: "4vw",
+        style:{
+            marginLeft:'0.5vw',
+            width:'1.5vw'
+        }
     },
     {
         name: "监控点名称",
-        width: "8vw",
+        width: "11vw",
+        style:{
+            width:'12vw'
+        }
     },
     {
         name: "预警状态",
-        width: "8vw",
-        isGrade:true,
-        textArr:['一般污染','中度污染','严重污染']
+        width: "5vw",
+        isNoiseGrade:true,
+        textArr:['白色污染','黄色污染','红色污染'],
+
+        style:{
+            marginLeft:'1vw',
+            width:'5.5vw'
+        }
     },
     {
         name: "有效开始时间",
         width: "8vw",
+        style:{
+            width:'8vw',
+        }
     },
     {
         name: "有效结束时间",
         width: "8vw",
+        style:{
+            width:'8vw',
+        }
     },
     {
         name: "执行人",
-        width: "8vw",
+        width: "6vw",
+        style:{
+            marginLeft:'1vw',
+        }
     },
     {
         name: "任务状态",
-        width: "8vw",
-        isDispose:true
+        width: "6vw",
+        isDispose:true,
+        style:{
+            marginLeft:'1vw',
+        }
     },
     {
         name: "任务级别",
@@ -91,6 +165,10 @@ export let nr_headerList = [
     {
         name: "序号",
         width: "3vw",
+        style:{
+            marginLeft:'0.5vw',
+            width:'2vw'
+        }
     },
     {
         name: "监控点名称",
@@ -99,6 +177,10 @@ export let nr_headerList = [
     {
         name: "噪声",
         width: "4vw",
+        style:{
+            marginLeft:'0.5vw',
+            // width:'1.5vw'
+        }
     },
     {
         name: "湿度",
@@ -114,6 +196,10 @@ export let nc_headerList = [
     {
         name: "序号",
         width: "3vw",
+        style:{
+            marginLeft:'0.5vw',
+            width:'2.5vw'
+        }
     },
     {
         name: "功能区类别",

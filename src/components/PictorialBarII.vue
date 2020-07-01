@@ -1,8 +1,8 @@
 <template>
     <div class="waterNavRightItem1Content">
         <div>
-            <div class="pie">
-                <div class="ab_center">
+            <div class="pie f_center">
+                <div >
                     <basicPieIII  w="3.2vw" h="3.2vw" :rate="rateVal(chartObj.rate)" :color="color"/>
                 </div>
             </div>
@@ -294,6 +294,9 @@
         width: 4.01vw;
         height: 4.01vw;
         /*margin: 0 2.81vw;*/
+        display: flex;
+        align-items: center;
+        justify-content: center;
         background-image: url("../assets/image/effluent/处理前后圆环框@2x.png");
         background-size: 100% 100%;
     }

@@ -6,36 +6,36 @@ Vue.use(VueRouter);
 const routes = [
     {
         path: "/",
-        redirect: '/effluent'
+        redirect: '/atmosphere'
     },
     {
         path: '/effluent',
         meta: {
-            index: 0,
-            name: '企业废水在线监管'
+            index: 2,
+            name: '企业废水综合监管'
         },
         component: () => import('../views/effluent/index.vue')
     },
     {
         path: '/waste',
         meta: {
-            index: 0,
-            name: '企业废气在线监管',
+            index: 2,
+            name: '企业废气综合监管',
         },
         component: () => import('../views/wasteGas/index.vue')
     },
     {
         meta: {
-            index: 1,
-            name: '大气环境在线监管'
+            index: 0,
+            name: '大气环境综合监管'
         },
         path: '/atmosphere',
         component: () => import('../views/atmosphere/index.vue')
     },
     {
         meta: {
-            index: 2,
-            name: '地表水环境在线监管'
+            index: 1,
+            name: '水环境综合监管'
         },
 
         path: '/environment',
@@ -45,7 +45,7 @@ const routes = [
     {
         meta: {
             index: 3,
-            name: '噪声与辐射安全综合监管'
+            name: '噪声辐射综合监管'
         },
         path: '/noise',
         component: () => import('../views/noise/index.vue')

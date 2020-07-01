@@ -8,13 +8,13 @@
             <div class="waterPolo flex">
               <div class="polo" v-if="waterInfoObj.waterChartVal">
                 <div class="poloBox">
-                  <WaterPolo w="5vw" h="5vw" :value="waterInfoObj.waterChartVal"/>
+                  <WaterPolo w="4.06vw" h="4.06vw" :value="waterInfoObj.waterChartVal"/>
                 </div>
                 <div class="bg_img"></div>
                 <div class="gradeText">{{waterInfoObj.waterGrade}}</div>
               </div>
               <div class="area f_column">
-                <span class="text">{{waterInfoObj.waterArea}}km²个</span>
+                <span class="text">{{waterInfoObj.waterArea}}km²</span>
                 <span>流域面积</span>
               </div>
               <div class="source f_column">
@@ -39,7 +39,7 @@
         <div class="mt-content">
           <ul class="mt-ul f_r_between">
             <li class="mt_item " v-for="(item,index) in mt_pieList" :key="index">
-              <basicPie :inventory="item.pieOptions"/>
+              <basicPie :inventory="item.pieOptions" :rateGrade="true"/>
               <span class="text">{{item.label}}</span>
               <i :class="[item.icon, 'ICON mt_icon ab_center']"></i>
 <!--              <div class="airIcon ab_center"></div>-->
@@ -144,13 +144,13 @@
         activeIndex:0,
         tabList:['预警','预报'],
         // rp_headerList:rp_headerList_warn,
-        rp_spListList:rp_spListList,
+        rp_spListList:[],
         rp_tableOption:rp_tableOption,
         mq_headerList:mq_headerList,
-        mq_spListList:mq_spListList,
+        mq_spListList:[],
         mq_tableOption:mq_tableOption,
         sp_headerList:sp_headerList,
-        sp_spListList:sp_spListList,
+        sp_spListList:[],
         sp_tableOption:sp_tableOption,
         waterInfoObj: {}, //水环境概况描述
         waterInfoList:[],
@@ -207,9 +207,11 @@
       activeIndex(val) {
         console.log('val',val)
         if ( val === 0 ){
+          if (!this.wateralerttable.earlyWarn) return
           //预警
           this.dataDispose(4,this.wateralerttable.earlyWarn,null,'warn')
         } else {
+          if (!this.wateralerttable.prediction) return
           //预报
           console.log('this.wateralerttable',this.wateralerttable)
           this.dataDispose(4,this.wateralerttable.prediction,null,'forecast')
@@ -312,8 +314,9 @@
       getWateralerttable() {//河流断面、污水厂、水污染源预警预报轮播一览
         this.$get('/i204wateralerttable').then(res => {
           if (res.code == 0) {
-            // console.log('轮播',res.data[0].earlyWarn)
+            console.log('轮播',res.data)
             this.wateralerttable = res.data
+            if (!res.data.earlyWarn) return
             this.dataDispose(4,res.data.earlyWarn,null,'warn')
           } else {
             console.log(res.err_msg)
@@ -431,6 +434,7 @@
     height: 93.8vh;
     padding: 2.31vh 1.04vw 2.56vh;
     box-sizing: border-box;
+    font-family: SourceHanSansCN-Regular;
     &-basicMap{
       width: 100%;
       height: 100%;
@@ -583,9 +587,10 @@
         margin-bottom: 2.04vh;
         /*background-color: rgba(15, 19, 32, 0.8);*/
         .poloBox{
-          width: 5vw;
-          height: 5vw;
-          background-size: 100%;
+          width: 4.06vw;
+          height: 4.06vw;
+          background-size: 100% 100%;
+          margin: 1vh 0 0 1vw;
           background-repeat: no-repeat;
           background-image: url("../../assets/image/environment/circle@2x.png");
         }
@@ -711,5 +716,11 @@
   }
   .mt_waterInlet{
     background-image: url("../../assets/image/environment/mt_waterInlet.png");
+  }
+  .ab_center{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
   }
 </style>

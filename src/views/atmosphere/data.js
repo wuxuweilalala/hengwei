@@ -1,7 +1,7 @@
 //空气质量监测情况
 export let aq_tableOption= {
     tableStyle: {
-        height: "49.6vh",
+        height: "35.11vh",
         width: "100%",
         margin: "0 auto"
     }, // 表格样式
@@ -10,7 +10,7 @@ export let aq_tableOption= {
     },
     tableTbodyStyle: {
         width: "100%",
-        height: "49.6vh"
+        height: "30.11vh"
     },
     tableTrstyle: {},
     // isTableHeaderLine: true, // 表头分割线是否使用
@@ -37,14 +37,26 @@ export let aq_headerList = [
     {
         name: "序号",
         width: "3vw",
+        style: {
+            marginLeft:'0.5vw',
+            width:'1.5vw'
+        }
     },
     {
-        name: "省",
-        width: "3vw",
+        name: "区域",
+        width: "5.5vw",
+        style: {
+            // marginLeft:'0.5vw',
+            width:'6vw'
+        }
     },
     {
         name: "AQI",
         width: "3vw",
+        style: {
+            marginLeft:'0.5vw',
+            // width:'2vw'
+        }
     },
     {
         name: "首要污染物",
@@ -63,14 +75,26 @@ export let aw_headerList = [
     {
         name: "序号",
         width: "3vw",
+        style: {
+            marginLeft:'0.5vw',
+            width:'1.5vw'
+        }
     },
     {
         name: "区域",
         width: "3.5vw",
+        style: {
+            // marginLeft:'1vw',
+            width:'3.5vw'
+        }
     },
     {
         name: "因子",
         width: "3.5vw",
+        style: {
+            // marginLeft:'1vw',
+            width:'3vw'
+        }
     },
     {
         name: "全市均值",

@@ -20,6 +20,10 @@ export let mq_headerList = [
     {
         name: "序号",
         width: "2vw",
+        style: {
+            // marginLeft:'0',
+            width: "1vw",
+        }
     },
     {
         name: "点位名称",
@@ -32,12 +36,20 @@ export let mq_headerList = [
     {
         name: "目标类别",
         width: "4vw",
+        style: {
+            // marginLeft:'0',
+            // width: "4.5vw",
+        }
     },
     {
         name: "是否达标",
         width: "4vw",
         color:'red',
-        isReach:true
+        isReach:true,
+        style: {
+            // marginLeft:'0',
+            width: "4vw",
+        }
     }
 ]
 
@@ -71,10 +83,16 @@ export let rp_headerList_warn = [   //预警
     {
         name: "序号",
         width: "5vw",
+        style: {
+            width: "3vw",
+        }
     },
     {
         name: "监控点名称",
         width: "14vw",
+        style: {
+            width: "15vw",
+        }
     },
     {
         name: "可疑因子",
@@ -83,13 +101,19 @@ export let rp_headerList_warn = [   //预警
     {
         name: "可疑数据描述",
         width: "10vw",
+        style: {
+            width: "8vw",
+        }
     },
     {
         name: "预警状态",
         width: "10vw",
         // iconClass: "icon-xiaoxi"
-        isGrade:true,
-        textArr: ['一般污染','中度污染','重度污染']
+        isWarnSyle:true,
+        isWarnSyleText:true,
+        style: {
+            marginLeft: "1vw",
+        }
     },
     {
         name: "可疑开始时间",
@@ -104,20 +128,30 @@ export let rp_headerList_forecast = [//预报
     {
         name: "序号",
         width: "5vw",
+        style: {
+            width: "3vw",
+        }
     },
     {
         name: "监控点名称",
         width: "14vw",
+        style: {
+            width: "15vw",
+        }
     },
     {
         name: "可疑因子",
-        width: "10vw",
+        width: "9vw",
+        style: {
+            width: "8vw",
+        }
     },
     {
         name: "预警状态",
         width: "10vw",
-        isGrade:true,
-        textArr: ['一般污染','中度污染','重度污染']
+        isWarnSyle:true,
+        isWarnSyleText:true,
+        // textArr: ['一般污染','中度污染','重度污染']
     },
     {
         name: "可疑开始时间",
@@ -126,6 +160,9 @@ export let rp_headerList_forecast = [//预报
     {
         name: "可疑结束时间",
         width: "12vw",
+        style: {
+            width: "13vw",
+        }
     },
     {
         name: "执行人",
@@ -169,6 +206,9 @@ export let sp_headerList = [
     {
         name: "序号",
         width: "2vw",
+        style: {
+            width: "1vw",
+        }
     },
     {
         name: "企业名称",
@@ -181,6 +221,9 @@ export let sp_headerList = [
     {
         name: "排污口等级",
         width: "4.5vw",
+        style: {
+            width: "2.5vw",
+        }
     },
     {
         name: "排污特征",

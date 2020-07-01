@@ -121,9 +121,9 @@
                         </ul>
                     </div>
                 </div>
-                <!--        任务实时更新状态表-->
+                <!--        排污总量监管-->
                 <div class="taskRealChart bg_c lineshadow">
-                    <chart-title :title="'实时污染物分析'" w="30%"/>
+                    <chart-title :title="'排污总量监管'" w="30%"/>
 <!--                    主要污染物-->
                     <div class="taskStylePie">
                         <div class="subTitle">
@@ -131,13 +131,13 @@
                         </div>
                         <div class="chartPie" v-if="tasksumaryObj.mainObjList">
                             <basic-pie-bar :mainObjList="tasksumaryObj.mainObjList"/>
+                            <div class="mainObjIcon mainObjposi"></div>
                         </div>
-                        <div class="mainObjIcon posi"></div>
                     </div>
-<!--                    占比情况-->
+<!--                    排污许可排放-->
                     <div class="situation">
                         <div class="subTitle">
-                            <div class="dotIcon"></div>不同等级占比情况
+                            <div class="dotIcon"></div>排污许可排放
                         </div>
                         <div class="barChart">
                             <ul class="data">
@@ -395,7 +395,15 @@
                 arr.forEach((item,index) => {
                     // console.log(item)
                     if (i==1){
-                        let subarr = [index+1,item.name,item.stance,item.factor,item.description,item.style,item.startTime,item.endTime]
+                        let subarr = [
+                            index+1,item.name,
+                            item.stance,
+                            item.factor,
+                            item.description,
+                            item.style,
+                            item.disposeStyle,
+                            item.startTime,
+                            item.endTime]
                         newArr.push(subarr)
                     }else if(i==2) {
                         this.mt_pieList.forEach(sub => {
@@ -417,6 +425,7 @@
         height: 93.8vh;
         padding: 2.3vh 1vw 2.6vh;
         box-sizing: border-box;
+        font-family: SourceHanSansCN-Regular;
     }
     .bg_c{
         padding: 0 1vw;
@@ -632,6 +641,7 @@
         position: relative;
         width: 9.63vh;
         height: 7.69vh;
+        line-height: 7.69vh;
         background-image: url("../../assets/image/waste/rate@2x.png");
         background-size: 100% 100%;
         .text{
@@ -722,12 +732,21 @@
             }
         }
     }
-.posi{
+    .chartPie{
+        position: relative;
+    }
+.mainObjposi{
     position: absolute;
     left: 0;
-    top: 50%;
-    /*transform: translate(2.75vw, 0.3vh);*/
-    /*transform: translate(2.75vw, 0.3vh);*/
-    transform: translate(1.4vw, -2.4vh);
+    top: 0;
+    margin-left: 1.3vw;
+    margin-top: 1vh;
 }
+
+    .ab_center{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
 </style>

@@ -5,7 +5,7 @@
         <!--        左侧切换按钮-->
         <div class="toggle-list"
           v-show="id!='other'">
-            <div :class="['toggle-tips', {'box-1':$route.path=='/noise'}]">
+             <div :class="['toggle-tips', {'box-1':$route.path=='/noise'}]" v-if="$route.path!=='/environment'">
                 <ul>
                     <li v-for="(item,index) in toggleList[id].value"
                       :key="index"
@@ -13,6 +13,17 @@
                         <i class="hexagon"
                           :class="[index===currentIndex ? 'hexagon-active':'']"></i>
                         <span>{{item}}</span>
+                    </li>
+                </ul>
+            </div>
+            <div :class="['toggle-tips']" v-else>
+                <ul>
+                    <li v-for="(item,index) in environmentMapToggle"
+                        :key="index"
+                        @click="changeMapToggleIndex(item,index)">
+                        <i class="hexagon"
+                           :class="[item.isShow ? 'hexagon-active':'']"></i>
+                        <span>{{item.name}}</span>
                     </li>
                 </ul>
             </div>
@@ -32,11 +43,14 @@
             <component :is="updateChart"
               :index="currChartIndex"
               :list="basicList"
+              :environmentMapToggle="environmentMapToggle"
+              :currSecondsId="currSecondsId"
               @showPop="showData"
+              @setWindText="setWindText"
               :secondsId="secondsId"></component>
         </div>
         <!--        污染显示条-->
-        <div class="polluteBar" v-show="secondsId=='态势地图'">
+        <div class="polluteBar">
             <div class="polluteBar-top">
                 <span>一般污染</span>
                 <span>中度污染</span>
@@ -88,17 +102,24 @@
         },
         data() {
             return {
+                currSecondsId:'',
+                environmentMapToggle:[
+                    {name:'网管叠加',isShow:false},{name:'流域叠加',isShow:false}
+                ] ,
                 flowchart:'',
                 showpolluteBar:false,
                 showFlowPop:false,
                 mapName: ['gaodeMap', 'gaodeMap', 'basicMap'],
                 currChartIndex: 0,
+                windText:{},
                 toggleList: {
-                    noise: {value: ['噪声态势图']}, environment: {value: ['网管叠加', "流域叠加"]}, atmosphere: {
+                    noise: {value: ['噪声态势图']},
+                    environment: {value: ['网管叠加', "流域叠加"]},
+                    atmosphere: {
                         value: ['态势地图', '色阶统计图'],
                         detail: {
-                            speed: '1.2m/s',
-                            direction: '东南风',
+                            speed: '',
+                            direction: '',
                             src: require('../assets/image/atmosphere/windImg.png')
                         }
                     }, other: {}
@@ -184,6 +205,10 @@
         },
 
         methods: {
+            setWindText(val) {
+              this.toggleList.atmosphere.detail.speed=val.speed
+              this.toggleList.atmosphere.detail.direction=val.direction
+            },
             getChartData() {
                 this.$get('/i601Perspective').then(res => {
                     if (res.code == 0) {
@@ -199,29 +224,57 @@
                 this.showFlowPop=true
             },
             changeIndex(item, i) {
-                this.currentIndex = i
-                this.secondsId = item
-                // console.log('item, i',item, i)
+                if (this.$route.path==='/environment') {
+
+                } else {
+                    this.currentIndex = i
+                    this.secondsId = item
+                }
+                console.log('item, i',item, i)
             },
             setHole() {
                 var optArr = $.map(adcodes, function (item) {
                     return '<option value="' + item.adcode + '">' + item.name + '</option>'
                 });
                 $('#code-list').append(optArr.join(''));
-            }
+            },
+            changeMapToggleIndex(item) {
+                this.currChartIndex=0
+                // if (this.currChartIndex!==0) return
+                item.isShow=!item.isShow
+
+                if (this.secondsId&&this.secondsId.indexOf(item.name)>-1) {
+                    let str = item.name+','
+                    this.secondsId = this.secondsId.replace(str,'')
+                } else {
+                    let str = this.secondsId?this.secondsId:''
+                    this.secondsId = str + item.name+','
+                }
+                this.currSecondsId = item.name
+            },
         },
         watch: {
             currChartIndex(val) {//切换地图时初始化按钮
-                if (val==-1) return
-                this.currentIndex = -1;
-                this.secondsId = null
+                if (this.$route.path==='/environment'){
+                    if (val>0) {
+                        this.currentIndex = -1;
+                        this.secondsId=null
+                    }
+                } else {
+                    if (val==-1) return
+                    this.currentIndex = -1;
+                    this.secondsId = null
+                }
             },
             currentIndex(val) {
-                if (val>-1) {
-                    this.currChartIndex = -1;
-                    // console.log('this.currChartIndex',this.currChartIndex)
+                if(this.secondsId!=='网管叠加'||this.secondsId!=='流域叠加'){
+                    if (val>-1) {
+                        this.currChartIndex = -1;
+                        // console.log('this.currChartIndex',this.currChartIndex)
+                    }
+
                 }
-            }
+            },
         },
         mounted() {
             //设置下钻

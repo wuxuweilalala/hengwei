@@ -24,7 +24,7 @@
                 :total="total"
                 :page-size="pageSize"
                 :current-page="pageNum"
-                @current-change="getData"
+                @current-change="pageTurning"
         >
         </el-pagination>
     </div>
@@ -58,33 +58,39 @@
         methods: {
             filtrateClass(val) {
                 console.log('aaaaaaaaa',val)
-                if (val==='任务类型') return
+                this.isFirstNO = !this.isFirstNO
+                if (this.isFirstNO) return
                 this.pageNum = 1
                 this.getData(val)
             },
             setTableList() {
                 this.tableList = this.currIndex === 0 ? this.emergencyTableData : this.operationTableData
             },
+            pageTurning(val) {
+                this.pageNum = val
+                this.getData()
+            },
           getData(val) {
                 let params ={
                     pageNum:this.pageNum,
                     popName:this.$route.query.style
                 }
-              if (val) {
+              if (val!=='任务类型') {
                   let str = this.currIndex==0?'应急响应':'日常运维'
                   params.taskClass=  str + '-' + val
+
               }
               this.$get('/i309PopupTable',params).then(res => {
                   if (res.code == 0) {
                       this.tableObj = res.data
                       this.total = res.data.total
                       this.pageNum = res.data.pageNum
-                      this.pageNum = res.data.pageSize
+                      this.pageSize = res.data.pageSize
                       this.emergencyTableData = this.dataDispose(res.data.emergencyTable,1)
                       this.operationTableData = this.dataDispose(res.data.operationTable,2)
                       this.setTableList()
                       this.taskClass = res.data.taskClass
-                      console.log('this.taskClass ',this.taskClass)
+                      // console.log('this.taskClass ',this.taskClass)
                   } else {
                       console.log(res.err_msg)
                   }
@@ -106,7 +112,8 @@
         },
         data() {
             return {
-                pageSize: 21,
+                isFirstNO:false,
+                pageSize: 20,
                 pageNum:1,
                 total:1,
                 tableList:[],
@@ -125,6 +132,9 @@
                     {
                         name: "任务类型",
                         width: "12vw",
+                        style: {
+                            width:'10vw'
+                        }
                     },
                     {
                         name: "公司名称",
@@ -137,6 +147,9 @@
                     {
                         name: "有效开始时间",
                         width: "12vw",
+                        style: {
+                            marginLeft:'1vw'
+                        }
                     },
                     {
                         name: "有效结束时间",
@@ -217,6 +230,7 @@
         height: 93.8vh;
         padding: 2.96vh 2.85vw 3.8vh;
         box-sizing: border-box;
+        font-family: SourceHanSansCN-Regular;
         .header{
             position: relative;
             .back{
@@ -226,6 +240,8 @@
                 width: 2.4vw;
                 height: 2.78vh;
                 /*background-color: red;*/
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
                 background-image: url("../../assets/image/back@2x.png");
             }
             .tableNav{

@@ -4,7 +4,7 @@
         <div>
             <div v-for="(item, index) in mainObjList" :key="index">
                 <div>{{item.label}}</div>
-                <div>{{item.value}}</div>
+                <div>{{item.value}}%</div>
             </div>
         </div>
     </div>
@@ -24,27 +24,10 @@
         data() {
             return {
                 chartOptions:null,
-                chartList: [
-                    {
-                        name:'化学需氧量',
-                        value:'15'
-                    },
-                    {
-                        name:'氨氮',
-                        value:'25'
-                    },
-                    {
-                        name:'总磷',
-                        value:'35'
-                    },
-                    {
-                        name:'PH值',
-                        value:'45'
-                    }
-                ]
             }
         },
         created() {
+            console.log('this.mainObjList',this.mainObjList)
             let value = 100
             let legendData = []
             let colors = ["rgb(0,154,255)", "#5fede1", "#fe7d44", "#ffffff"];

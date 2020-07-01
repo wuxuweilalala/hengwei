@@ -12,7 +12,6 @@
         data() {
             return {
                 placeHolderStyle: {
-
                     normal: {
                         label: {
                             show: false
@@ -52,6 +51,11 @@
                 type:String,
                 default:'rgba(0, 247, 255)'
             },
+            //百分之一百分三级
+            rateGrade: {
+                type:Boolean,
+                default:false
+            }
         },
         components: {
             'v-chart': ECharts
@@ -59,7 +63,6 @@
         computed: {
             charOptions() {
                 let list = this.inventory;
-
                 var incomplete = this.calculate(list.value)
                 let option = {
                     //  tooltip: {
@@ -72,9 +75,8 @@
                         textAlign: "center",
                         text: `${list.value}%`,
                         "textStyle": {
-                            "fontWeight": 'normal',
                             "color": '#FFF',
-                            "fontSize": '0.83vw'
+                            "fontSize": '12',
                         },
                     },
                         legend: {
@@ -140,7 +142,8 @@
                                 name: '已完成',
                                 "itemStyle": {
                                     "normal": {
-                                        color: {
+                                        color: this.rateGrade?this.setColor(this.inventory.value):
+                                        {
                                             type: 'linear',
                                             x: 0,
                                             y: 0,
@@ -151,10 +154,7 @@
                                                 {offset: 1, color: this.linearGradient_ii},
                                             ],
                                             globalCoord: false,
-
-
                                         }
-
                                     }
                                 },
                                 label: {show: false},
@@ -181,6 +181,9 @@
             },
             doneVal(val) {
                 return (val/100)*135
+            },
+            setColor(val) {
+                return  val <= 33&& val >0 ? '#fe7d44' :  val <= 66&& val > 33 ? '#ffe400' : '#009aff'
             }
         }
     };

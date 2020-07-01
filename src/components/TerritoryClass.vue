@@ -23,8 +23,8 @@
                 <div class="left_bg"></div>
             </div>
             <!--        中间饼图-->
-            <div class="pie">
-                <div class="ab_center">
+            <div class="pie f_center">
+                <div >
                     <basicPieIII  w="3.49vw" h="3.49vw" :value="classObj.value" :rate="classObj.rate"  :areaName="classObj.label" chartStyle="2"/>
                 </div>
             </div>
@@ -41,8 +41,8 @@
             </div>
         </div>
         <div class="condition f_c_center" v-else>
-            <div class="pie">
-                <div class="ab_center">
+            <div class="pie f_center">
+                <div>
                     <basicPieIII  w="3.49vw" h="3.49vw" :value="classObj.value" :rate="classObj.rate"  :areaName="classObj.label" chartStyle="2"/>
                 </div>
             </div>
@@ -189,6 +189,9 @@
                 width: 4.01vw;
                 height: 4.01vw;
                 /*margin: 0 2.81vw;*/
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 background-image: url("../assets/image/effluent/地域分类图表装饰@3x.png");
                 background-size: 100% 100%;
             }

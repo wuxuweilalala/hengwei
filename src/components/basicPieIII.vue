@@ -98,7 +98,7 @@
                     position: 'center',
                     show: true,
                     textStyle: {
-                        fontSize: '9',
+                        fontSize: this.vwTopx(0.63),
                         fontWeight: 'normal',
                         color: 'rgba(255, 255, 255, 0.8)'
                     }

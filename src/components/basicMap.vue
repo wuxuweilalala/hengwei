@@ -223,6 +223,23 @@
 
         },
         methods: {
+            getAirSituationData() {
+                this.$get('/i604AirPosture').then(res => {
+                    if (res.code == 0) {
+                        // this.airQualityObj =  res.data
+                        // this.dataDispose(1,res.data.aqiRankTable)
+                        // this.airGradeList = res.data
+                        this.situationOptions.series[0].data = res.data.windDataList
+                        // console.log(res.data.windDataList)
+                        this.situationShow = true
+                        this.chartShow = false
+                        this.$emit('setWindText',res.data.windText)
+                        // console.log(data)
+                    } else {
+                        console.log(res.err_msg)
+                    }
+                })
+            },
             setChartOptions() {
                 vECharts.registerMap('深圳', goodsData);
                 let mapGeoData = [
@@ -428,44 +445,9 @@
 
             },
             changeChart(val,old) {
-                let self = this
-                console.log('this.secondsId',this.secondsId,2,val,old)
-                if (this.secondsId == '色阶统计图') {
-                    this.situationShow = false
-                    this.chartShow = true
-                    let regions = ['罗湖区', '南山区', '龙岗区', '福田区'];
-                    let regionsData = [];
-                    regions.forEach(e => {
-                        regionsData.push({
-                            name: e,
-                            itemStyle: {
-                                areaColor: 'red',
-                                color: 'red'
-                            }
-                        })
-                    })
-                    for (let i in self.chartOptions.geo) {
-                        self.$set(self.chartOptions.geo[i], 'regions', regionsData)
-                        // this.chartOptions.geo[i].regions = regionsData
-                    }
-                    console.log('regionsData',self.chartOptions.geo,regionsData)
-                } else if (this.secondsId === '噪声态势图（等值线图）') {
-                    let seriesData = {
-                        type: 'heatmap',
-                        name: '噪声态势图',
-                        coordinateSystem: 'geo',
-                        data: [['113.92706199999998', '22.542736', 41334],
-                            ['113.93299300000001', '22.507888', 50000],
-                            ["113.99469899999997", "22.523346", 50000],
-                            ["113.99069899999997", "22.723346", 50000],]
-                    }
-                    // this.chartOptions.series[1]=seriesData
-                    self.$set(this.chartOptions.series, '1', seriesData)
-                }
                 if (this.secondsId == '态势地图') {
-                    this.situationShow = true
                     this.chartShow = false
-                    //this.chartOptions = this.situationOptions
+                    this.getAirSituationData()
                 }
                 if (!this.secondsId) { //只显示透视图，无叠加东西
                     this.situationShow = false
@@ -480,10 +462,10 @@
             }
         },
         created() {
-            this.$get('https://24e-img.oss-cn-shenzhen.aliyuncs.com/hengwei/situation.js').then(res => {
-                // console.log(res);
-                this.situationOptions.series[0].data = res
-            })
+            // this.$get('https://24e-img.oss-cn-shenzhen.aliyuncs.com/hengwei/situation.js').then(res => {
+            //     // console.log(res);
+            //     this.situationOptions.series[0].data = res
+            // })
             this.chartOptions = this.setChartOptions();
             console.log('this.chartOptions',this.chartOptions,1)
         },
@@ -498,8 +480,6 @@
             }
         },
         mounted() {
-            console.log(this.chartShow);
-            console.log(this.situationShow);
             this.setPosition()
 
         }

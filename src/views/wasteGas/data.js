@@ -2,38 +2,72 @@
 export let wr_headerList = [
     {
         name: "序号",
-        width: "5vw",
+        width: "3vw",
+        style:{
+            marginLeft:'0.5vw',
+            width:'1vw'
+        }
     },
     {
         name: "公司名称",
-        width: "12vw",
+        width: "10vw",
+        style:{
+            // marginLeft:'0.5vw',
+            width:'10vw'
+        }
     },
     {
         name: "站位名称",
-        width: "8vw",
+        width: "8.5vw",
+        style:{
+            // marginLeft:'0.5vw',
+            width:'10vw'
+        }
     },
     {
         name: "可疑因子",
-        width: "8vw",
+        width: "4vw",
+        marginLeft:'3vw',
+
+        style:{
+            marginLeft:'1vw',
+            width:'4vw'
+        }
     },
     {
         name: "可疑数据描述",
-        width: "8vw",
+        width: "6vw",
+
+        style: {
+            width: "4vw",
+        }
     },
     {
         name: "预警状态",
-        width: "8vw",
+        width: "6vw",
         // iconClass: "icon-xiaoxi",
-        isGrade:true,
-        textArr:['一般污染','中度污染','严重污染']
+        isWarnSyle:true,
+        isWarnSyleText:true,
+        // textArr:['一般污染','中度污染','严重污染'],
+        style: {
+            marginLeft:'1vw',
+        }
+    },
+    {
+        name: "处理状态",
+        width: "6vw",
+        isDispose:true,
+        style: {
+            width: "4vw",
+        }
     },
     {
         name: "可疑开始时间",
-        width: "10vw",
+        width: "6vw",
     },
     {
         name: "可疑结束时间",
-        width: "8vw",
+        width: "6vw",
     }
 ]
 export let wr_tableOption= {

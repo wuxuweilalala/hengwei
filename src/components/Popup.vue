@@ -1,6 +1,6 @@
 <template>
     <div class="popup" v-show="isShow">
-        <div class="popup-container ab_center" :style="setStyle()">
+        <div class="popup-container" :style="setStyle()">
             <div class="header f_r_between f_c_center">
                 <div class="title">{{title}}</div>
                 <div class="closeIcon ICON pointer" @click="$emit('update:isShow',false)"></div>
@@ -54,6 +54,9 @@
         position: fixed;
         top: 0;
         left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100vw;
         height: 100vh;
         /*background: rgba(0,0,0,0.3);*/

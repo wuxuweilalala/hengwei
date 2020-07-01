@@ -43,17 +43,17 @@
                 timer: '',
                 list: [
                     {
-                        title: '企业废水在线监管',
-                        seconds: [{title: "企业废水在线监管", path: '/effluent'}, {title: '企业废气在线监管', path: '/waste'}]
+                        title: '大气环境综合监管',path: '/atmosphere'
                     },
                     {
-                        title: '大气环境在线监管',path: '/atmosphere'
+                        title: '水环境综合监管', src: '',path:'/environment'
                     },
                     {
-                        title: '地表水环境在线监管', src: '',path:'/environment'
+                        title: '企业废水综合监管',
+                        seconds: [{title: "企业废水综合监管", path: '/effluent'}, {title: '企业废气综合监管', path: '/waste'}]
                     },
                     {
-                        title: '噪声与辐射安全综合监管', src: '',path:'/noise'
+                        title: '噪声辐射综合监管', src: '',path:'/noise'
                     }
                 ],
                 currentIndex: 0,

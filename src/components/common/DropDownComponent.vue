@@ -63,6 +63,7 @@ export default {
 
     },
     changeList(e, index, item) {
+      // console.log(item)
       this.SelectIndex = index;
       // console.log('dropdowncomponent',this.SelectIndex,item);
 

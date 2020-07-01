@@ -8,24 +8,19 @@
           <TerritoryClass  v-if="airQualityObj" :airQualityObj="airQualityObj" />
         </div>
       </div>
-      <!-- 监测区域内污染情况一览 -->
+      <!-- 排污总量监管 -->
       <div class="waterNavLeftItem2">
-        <div class="waterNavLeftItem2Title">监测区域内监测情况概述</div>
+        <div class="waterNavLeftItem2Title">排污总量监管</div>
         <div class="waterNavLeftItem2Content">
           <div class="mainPollutants">
             <div>主要污染物</div>
           </div>
-          <!-- 图表1 -->
-          <div class="doughnutChartItem" v-if="charOptions5Obj[1]">
-            <vChart :options="charOPtions5" autoresize class="doughnutChart"></vChart>
-            <div>
-              <div v-for="(item, index) in charOptions5Obj[1].value.length" :key="index">
-                <div>{{charOptions5Obj[1].name[index]}}</div>
-                <div>{{charOptions5Obj[1].value[index]}}</div>
-              </div>
-            </div>
-            <div class="mainObjIcon posi iconPosi"></div>
+          <div class="chartPie" v-if="charOptions5Obj">
+            <basic-pie-bar :mainObjList="charOptions5Obj[1]"/>
+            <div class="mainObjIcon posi_main iconPosi_main"></div>
           </div>
+
+          <!-- 图表1 -->
           <div class="pollutantEnterprises">
             <div>
               污染物企业
@@ -35,15 +30,15 @@
               </div>
             </div>
           </div>
-          <div class="pollutantEnterprisesList" v-if="charOptions5Obj[0]">
+          <div class="pollutantEnterprisesList" v-if="charOptions5Obj">
             <div
-              v-for="(item, index) in charOptions5Obj[0].value.length"
+              v-for="(item, index) in charOptions5Obj[0].name.length"
               :key="index"
               class="pollutantEnterprisesListItem"
             >
               <div class="pollutantEnterprisesListItemTop">
                 <div>{{charOptions5Obj[0].name[index]}}</div>
-                <div>{{charOptions5Obj[0].value[index]}}</div>
+                <div>{{charOptions5Obj[0].value[index]*100}}%</div>
               </div>
               <!-- <div class="pollutantEnterprisesListContent"></div> -->
               <!-- 柱形图 -->
@@ -73,7 +68,7 @@
     <div class="waterNavRight">
       <!-- 污染削减率 -->
       <div class="waterNavRightItem1">
-        <div class="waterNavRightItem1Title">监测区域内监测情况概述</div>
+        <div class="waterNavRightItem1Title">污染削减率</div>
         <div class="waterNavRightItem1Content" v-if="updateAbatement">
           <div class="slectBox f_r_between">
             <input
@@ -102,7 +97,7 @@
       </div>
       <!-- 任务实时更新状态表 -->
       <div class="waterNavRightItem2">
-        <div class="waterNavRightItem2Title">监测区域内监测情况概述</div>
+        <div class="waterNavRightItem2Title">任务实时更新状态表</div>
         <div class="waterNavRightItem2Content">
           <div class="charOPtions9List">
             <div class="pointer" v-for="(item, index) in charOPtions9List" :key="index" @click="showWarnPop=true">
@@ -133,7 +128,7 @@
       </div>
       <!-- 监控点上传率概况 -->
       <div class="waterNavRightItem3">
-        <div class="waterNavRightItem3Title">监测区域内监测情况概述</div>
+        <div class="waterNavRightItem3Title">监控点上传率概况</div>
         <div class="waterNavRightItem3Content">
           <div class="monitorTitle">
             <div>监控上传率</div>
@@ -145,8 +140,8 @@
             <!-- 说明 -->
             <div>
               <div v-for="(item, index) in charOPtions7List[0]" :key="index">
-                <div>{{item|strLength(10)}}</div>
-                <div>{{charOPtions7List[1][index][1]}}</div>
+                <div :title="item">{{item|strLength(10)}}</div>
+                <div>{{charOPtions7List[2][index]}}%</div>
               </div>
             </div>
 <!--            <div class="airIcon posi"></div>-->
@@ -181,6 +176,7 @@ import toggleMap from "../../components/toggleMap";
 import PictorialBarII from "../../components/PictorialBarII";
 import Popup from "../../components/Popup";
 import TerritoryClass from "../../components/TerritoryClass";
+import basicPieBar from "../../components/basicPieBar";
 
 
 import {
@@ -248,43 +244,73 @@ export default {
       tableHeaderList: [
         {
           name: "序号",
-          width: "5.16vw",
-          height: ""
+          width: "3vw",
+          style: {
+            marginLeft:'0.5vw',
+            width: "1vw",
+          }
         },
         {
           name: "公司名称",
           width: "10.88vw",
-          height: ""
+          style: {
+            marginLeft:'0.5vw',
+            width: "9vw",
+          }
         },
         {
           name: "站位名称",
-          width: "5.68vw",
-          height: ""
+          width: "10vw",
+          style: {
+            marginLeft:'0.5vw',
+            width: "11vw",
+          }
         },
         {
           name: "可疑因子",
-          width: "5.62vw",
-          height: ""
+          width: "5vw",
+          style: {
+            marginLeft:'1vw',
+            width: "4vw",
+          }
         },
         {
           name: "可疑数据描述",
           width: "7.08vw",
-          height: ""
+          // isWarnSyle:true,
+          style: {
+            marginLeft:'0.5vw',
+            width: "6vw",
+          }
         },
         {
           name: "预警状态",
           width: "6.46vw",
           height: "",
-          iconClass: "icon-xiaoxi"
+          iconClass: "icon-xiaoxi",
+          isWarnSyle:true,
+          style: {
+            marginLeft:'1vw',
+            width: "5vw",
+          }
+        },
+        {
+          name: "处理状态",
+          width: "6.03vw",
+          isDispose:true,
+          style: {
+            marginLeft:'1.5vw',
+            width: "4vw",
+          }
         },
         {
           name: "可疑开始时间",
-          width: "7.03vw",
+          width: "8.03vw",
           height: ""
         },
         {
           name: "可疑结束时间",
-          width: "8.18vw",
+          width: "10.18vw",
           height: ""
         }
       ],
@@ -301,7 +327,7 @@ export default {
       charOPtions4: {}, // 削减后
       charOPtions4Obj: {}, // 削减后
       charOPtions5: [],
-      charOptions5Obj: {},
+      charOptions5Obj: null,
       charOPtions6: {},
       charOptions6List: [],
       charOPtions7: {},
@@ -382,19 +408,20 @@ export default {
     this.getPopData()
     this.getAbatement()
     this.getNoiseOverview()
+    this.getTaskList()
   },
   computed:{
 ...mapGetters('effluent',{
     pieValue:'getPieValue'
 }),
   },
-  components: { Popup,PictorialBarII,TerritoryClass,TableComponent, vChart, SelectComponent, DropDownComponent,toggleMap,basicPie },
+  components: { Popup,PictorialBarII,TerritoryClass,basicPieBar,TableComponent, vChart, SelectComponent, DropDownComponent,toggleMap,basicPie },
   methods: {
     getNoiseOverview() {
-      this.$get('/i501NoiseOverview').then(res => {
+      this.$get('/i101inspectsumary').then(res => {
         if (res.code == 0) {
           this.airQualityObj =  res.data
-          console.log('res.data',res.data)
+          // console.log('res.data',res.data)
         } else {
           console.log(res.err_msg)
         }
@@ -402,11 +429,11 @@ export default {
       })
     },
     changeSelectComponent(val) {
-      console.log('11111',val.label)
+      // console.log('11111',val.label)
       this.getAbatement(val.label)
     },
     changeSelectItemed(val) {
-      console.log(val)
+      // console.log(val)
       this.charOPtions6 = val
       this.charOptions6List = val.value
       // this.selectItemed = val
@@ -444,14 +471,22 @@ export default {
       if (enterprise) {
         params.enterprise = enterprise
       }
-      this.$get('/i305polluteAbatement',params).then(res => {
+      this.$get('/i105pollreducerate',params).then(res => {
+        // console.log(11111,res.data)
         this.updateAbatement=false
         if (res.code == 0) {
           this.abatementObj=res.data
           this.abatementObj.selectOption = {
             placeholder: res.data.currentSelected.label
           }
-          // console.log('this.selectOption',this.abatementObj)
+          this.abatementObj.beforeDispose = {
+            value:res.data['处理前']['消减量'],
+            rate:res.data['处理前']['消减率']
+          }
+          this.abatementObj.afterDispose = {
+            value:res.data['处理前']['消减量'],
+            rate:res.data['处理前']['消减率']
+          }
         } else {
           console.log(res.err_msg)
         }
@@ -461,90 +496,87 @@ export default {
         this.showSelectList=true
       })
     },
+    getTaskList() {
+      this.$get('/i106tasksumary').then(res => {
+        // console.log('123',res.data)
+        if (res.code == 0) {
+          this.charOPtions9List = res.data["预警状态"];
+          // this.mt_pieList = res.data['占比'].realStyle
+          // let newArr = []
+          res.data['占比'].realStyle.forEach((item,i) => {
+            this.mt_pieList.forEach(sub => {
+              if (item.name===sub.label){
+                sub.pieOptions.value=item.value
+              }
+            })
+          })
+          // console.log('123',this.mt_pieList)
+
+          // // this.popData = newArr
+        } else {
+          console.log(res.err_msg)
+        }
+      })
+    },
     getAllDate() {
       let self=this
-      // 地域分类
-      getRegion().then(data => {
-        Object.keys(data).forEach((key,index) => {
-          self.dropdownList[index]={
-            label:key,
-            total:data[key].total,
-            value:data[key].value
-          }
-        })
-        self.charOPtions6 = pie3(self.dropdownList[0]); // 地域分类
-        self.charOptions6List =self.dropdownList[0].value;
-        // console.log(this.charOptions6List);
-      });
 
       // 主要污染物 和 污染企业
       getPollution().then(data => {
-        this.charOptions5Obj[1] = data["主要污染物"];
+        this.charOptions5Obj = {}
+        let arr = []
+        data["主要污染物"].name.forEach(item => {
+          arr.push({label:item})
+        })
+        data["主要污染物"].value.forEach((item,i) => {
+          arr[i].value=item
+        })
+        // console.log(arr)
+        this.charOptions5Obj[1] = arr;
         this.charOptions5Obj[0] = data["污染源企业"];
-        this.charOPtions5 = pieLeft(this.charOptions5Obj[1]); // 主要污染物
-        // console.log('this.charOptions5Obj',this.charOptions5Obj)
         // 列表的图形配置
         self.charOptions5Obj[0].name.forEach((item, index) => {
           self.charOPtions8.push(
             iconogram3({
               name: item,
-              value: self.charOptions5Obj[0].value[index].replace("%", "") * 1
+              value: self.charOptions5Obj[0].value[index]*100
             })
           );
         });
-        // console.log('this.charOPtions8)',this.charOPtions8);
-        // this.charOPtions8 = iconogram3(this.charOptions5Obj[0]); // 污染物企业
-        // console.log(this.charOptions5Obj);
       });
 
       // 污染源预警实时一览
       getRealTimePollutionSource().then(data => {
         this.data = [];
-        // console.log(data);
+        console.log('data',data);
         data.forEach(item => {
           this.data.push([
             this.data.length + 1,
             item.companyName,
             item.siteName,
             item.paramName,
-            item.warningState,
             item.flag,
+            item.warningState,
+            item.disposeStyle,
             item.beginTime,
             item.endTime
           ]);
         });
       });
 
-      // 污染削减率
-      getPollutionReduction().then(data => {
-        // 削减前
-        this.charOptions3 = pie1(data["处理前"]); // 饼图
-        this.charOptions1 = iconogram1(data["处理前"]); // 象形图
-        this.charOPtions3Obj = data["处理前"];
-        // 削减后
-        this.charOPtions4 = pie2(data["处理后"]); // 饼图
-        this.charOptions2 = iconogram2(data["处理后"]); // 象形图
-        this.charOPtions4Obj = data["处理后"];
-      });
-
-      // 任务实时更新列表
-      getTaskList().then(data => {
-        this.charOPtions9List = data["预警状态"];
-        // console.log(this.charOPtions9List, "任务实时更新列表");
-      });
-
       // 监控点上传率概况
       getMonitorUpload().then(data => {
+        // console.log('data',data)
         this.charOPtions7List[0] = data["监控上传率"]; // 监控上传率
         this.charOPtions7List[1] = Object.entries(data["地域详情"]); // 地域详情
         this.charOPtions7List[2] = data["list"];
         this.charOPtions7 = pieRight(this.charOPtions7List); // 监控上传图
-        // console.log(this.charOPtions7List, "监控点上传率概况");
+        // console.log(this.charOPtions7List, "监控点上传率概况",Object.entries(data["地域详情"]));
       });
     },
     // 搜索企业
     search(item) {
-      console.log(item.target.value)
+      // console.log(item.target.value)
       this.getAbatement(null,item.target.value)
       // console.log(this.enterpriseName);
       // getEnterpriseList(this.enterpriseName).then(data => {
@@ -578,6 +610,7 @@ export default {
   padding: 2.31vh 1.04vw 2.56vh;
   display: flex;
   justify-content: space-between;
+  font-family: SourceHanSansCN-Regular;
   // 左侧
   .waterNavLeft {
     width: 18.75vw;
@@ -998,7 +1031,7 @@ export default {
         // background: rgba(255, 255, 255, 0.3);
         box-sizing: border-box;
         // border-left: 0.16vw solid #009aff;
-        font-style: SourceHanSansCN-Regular;
+        font-family: SourceHanSansCN-Regular;
         font-size: 1.48vh;
         line-height: 4.24vh;
         letter-spacing: 0px;
@@ -1426,6 +1459,16 @@ export default {
     /*height: 40vw;*/
   }
 }
+.chartPie{
+  position: relative;
+  /*.mainObjIcon{*/
+  /*  position: absolute;*/
+  /*  left: 0;*/
+  /*  top: 0;*/
+  /*  !*margin-top: 1vw;*!*/
+  /*  !*margin-left: 1vw;*!*/
+  /*}*/
+}
 .mt_icon{
   width: 1.88vw;
   height: 1.88vw;
@@ -1486,18 +1529,25 @@ export default {
 .warn-popContainer{
     padding: 0 1vw;
 }
-  .posi{
+  .posi_main{
     position: absolute;
     left: 0;
     top: 0;
     /*transform: translate(1.4vw, 2.5vh);*/
-    transform: translate(1.5vw, 2.7vh);
+    /*transform: translate(1.5vw, 2.7vh);*/
 
   }
-  .iconPosi {
-    transform: translate(1.3vw, 0.8vh);
+  .iconPosi_main {
+    transform: translate(2.25vw, 0.8vh);
   }
   .territoryBox{
     padding: 0 1vw;
   }
+
+.ab_center{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
 </style>

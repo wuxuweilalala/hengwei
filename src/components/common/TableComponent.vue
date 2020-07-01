@@ -47,20 +47,30 @@
             width: tableHeaderList[subIndex].width,
             marginLeft: tableHeaderList[subIndex].marginLeft,
             marginRight: tableHeaderList[subIndex].marginRight,
+            ...tableHeaderList[subIndex].style,
             color:setFontColor(subIndex,index)}"
           class="proportionTableTd"
         >
           <div
-            v-if="tableHeaderList[subIndex].isGrade"
-            :class="setGradeDot(item)"
+            v-if="tableHeaderList[subIndex].isNoiseGrade"
+            :class="setNoiseGradeDot(item)"
+          ></div>
+          <div
+                  v-if="tableHeaderList[subIndex].isGrade"
+                  :class="setGradeDot(item)"
           ></div>
           <div v-if="tableHeaderList[subIndex].isReach"
                :class="setReachDot(item)"
           ></div>
-          <div :class="['text',`${setColor(item,subIndex)}`]">
+          <div v-if="tableHeaderList[subIndex].isWarnSyle"
+               :class="[setWarnSyle(item),'ICON','warnStyleIcon']"
+          ></div>
+          <div :class="['text',`${setColor(item,subIndex)}`]"  :title="item">
             {{tableHeaderList[subIndex].isReach
             ||tableHeaderList[subIndex].isReach_i ? (item?'达标':'不达标'):
             tableHeaderList[subIndex].isDispose?(item==0?'未处理':item==1?'处理中':'已处理'):
+            tableHeaderList[subIndex].isWarnSyle&&tableHeaderList[subIndex].isWarnSyleText?
+            (item==1?'白色预警':item==2?'黄色预警':item==3?'红色预警':''):
             tableHeaderList[subIndex].isGrade?(item==1?tableHeaderList[subIndex].textArr[0]:item==2?tableHeaderList[subIndex].textArr[1]:tableHeaderList[subIndex].textArr[2]):
             item}}
           </div>
@@ -174,8 +184,15 @@ export default {
         return isChangeColor ?  this.tableHeaderList[subIndex].color : '#fff'
       }
     },
+    setWarnSyle(item) {
+      return item == '白色预警'||item==1 ? 'w_warn': item == '黄色预警'||item==2 ? 'y_warn' :item == '红色预警'||item==3 ? 'r_warn' :  item == ''
+    },
     setGradeDot(item) {
       return item == 1 ? 'mild_dot' : item == 2 ? 'medium_dot' : 'severe_dot'
+    },
+    setNoiseGradeDot(item) {
+      console.log(item)
+      return item == 1 ? 'mild_noise' : item == 2 ? 'mild_dot' : 'severe_dot'
     },
     setReachDot(item) {
       return item ? 'reach_dot' : 'noreach_dot'
@@ -188,7 +205,11 @@ export default {
         // console.log(item)
         str = item==0?'noDispose':item==1?'disposing':'disposed'
       } else {
-        str = item==='A级'?'a_c':item==='B级'?'b_c':item==='C级'?'c_c':item==='D级'?'d_c':item==='E级'?'e_c':''
+        str = item==='一级'||item==='理想'?'a_c':
+              item==='二级'||item==='良好'?'b_c':
+              item==='三级'||item==='污染'?'c_c':
+              item==='四级'||item==='重污染'?'d_c':
+              item==='五级'||item==='严重污染'?'e_c':''
       }
       return str
     }
@@ -284,13 +305,42 @@ export default {
     .proportionTableTd {
       display: flex;
       align-items: center;
+      overflow: hidden;
+      margin-left: 0.5vw;
+      /*padding-right: 1vw;*/
     }
   }
 }
 
 .text{
+  /*width: 5vw;*/
   white-space: nowrap;
+  overflow: hidden;
+  /*padding-right: 1vw;*/
+  box-sizing: border-box;
+  text-align: left;
+  /*overflow-y: hidden;*/
+  /*overflow-x: scroll;*/
+
+  /*&::-webkit-scrollbar {!*隐藏滚bai轮*!*/
+  /*  width: 2px;*/
+  /*}*/
 }
+.warnStyleIcon{
+  width: 0.63vw;
+  height: 0.63vw;
+  margin-right: 0.25vw;
+}
+.w_warn{
+  background-image: url("../../assets/image/w_warn@2x.png");
+}
+.y_warn{
+  background-image: url("../../assets/image/y_warn@2x.png");
+}
+.r_warn{
+  background-image: url("../../assets/image/r_warn@2x.png");
+}
+
   .a_c{
     color: rgba(0, 154, 255, 1);
   }

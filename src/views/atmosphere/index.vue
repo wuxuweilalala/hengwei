@@ -54,10 +54,7 @@
 <!--        地图-->
         <div class="map">
             <ToggleMap :id="'atmosphere'" />
-            <div class="waring-tips">
-             <img src="../../assets/image/atmosphere/tips.png" />
-                <div>{{forefcastObj.msgForecast}}</div>
-            </div>
+        <WarnTips :options="forefcastObj" />
         </div>
 <!--        街道、社区、工地空气质量预报-->
         <div class="airForecast bg_c">
@@ -145,7 +142,7 @@ import ToggleMap from "../../components/toggleMap";
 import {aq_headerList,aw_headerList,aq_tableOption,aw_tableOption,aqiList} from './data.js'
 import DropDownComponent from "../../components/common/DropDownComponent";
 import SelectComponent from '../../components/common/SelectComponent'
-
+import WarnTips from '../../components/warnTips'
 export default {
   name: "Atmosphere",
   components: {
@@ -158,7 +155,8 @@ export default {
       basicBar,
       basicLine,
       DropDownComponent,
-      SelectComponent
+      SelectComponent,
+      WarnTips
   },
     data() {
       return {
@@ -395,6 +393,7 @@ export default {
     height: 93.8vh;
     padding: 2.3vh 1vw 2.6vh;
     box-sizing: border-box;
+    font-family: SourceHanSansCN-Regular;
   }
   .bg_c{
       padding: 0 1vw;
@@ -414,25 +413,7 @@ export default {
     width: 100%;
     height: 58vh;
       position: relative;
-      .waring-tips{
-          width: 100%;
-          height: 2.96vh;
-          margin-top: 2.4vh;
-          display: flex;
-          align-items: center;
-          padding: 0 0.93vh;
-          box-sizing: border-box;
-          background-color: rgba(4, 11, 39, 0.3);
-          img{
-              width: 1.76vh;
-              height: 1.48vh;
-              margin-right: 0.78vw;
-          }
-          div{
-              color: #fff;
-              font-family: SourceHanSansCN-Regular;
-          }
-      }
+
   }
   .airForecast{
     width: 100%;
@@ -600,6 +581,9 @@ export default {
             position: relative;
             width: 5.21vw;
             height: 9.6vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .text{
             font-size: 0.63vw;

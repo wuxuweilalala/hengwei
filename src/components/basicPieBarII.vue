@@ -9,8 +9,8 @@
         <!-- 说明 -->
         <div>
             <div v-for="(item, index) in chartList" :key="index" >
-                <div>{{item.scopeText}}</div>
-                <div>{{item.currVal}}</div>
+                <div class="text" :title="item.scopeText">{{item.scopeText}}</div>
+                <div>{{item.currVal}}%</div>
             </div>
         </div>
     </div>
@@ -30,19 +30,18 @@
         data() {
             return {
                 chartOptions:null,
-
                 // chartList: [
                 //     {
                 //         name:'化学需氧量',
-                //         value:'15'
+                //         currVal:'0'
                 //     },
                 //     {
                 //         name:'氨氮',
-                //         value:'25'
+                //         currVal:'10'
                 //     },
                 //     {
                 //         name:'总磷',
-                //         value:'35'
+                //         currVal:'30'
                 //     }
                 // ]
             }
@@ -94,22 +93,28 @@
             let trafficWay = [];
             let innerData=[];
             console.log('this.chartList',this.chartList)
+            let max = 0
             let maxValue = this.chartList.reduce((sum, obj) => {
-                console.log(Number(obj.currVal.replace('%','')),sum )
-                return sum += Number(obj.currVal.replace('%',''))
-            },0);
+                // console.log(Number(obj.currVal.replace('%','')),sum )
+                let num =  Number(obj.currVal.replace('%',''))
+                max =  num > max ?  num : max
+                return sum += num
 
+            },0);
+            console.log('max',max)
             this.chartList.forEach((item, index) => {
                 trafficWay.push({
                     name: item.name,
                     value: item.currVal.replace('%','')
                 })
+
             });
 
             let color = ['rgb(254,125,68)', 'rgb(0,154,255)', 'rgb(255,255,255)'];
             let colorOpacity = ['rgba(254,125,68,0.3)', 'rgba(0,154,255,0.3)', 'rgba(255,255,255,0.3)']
+
             let optionsObj ={
-                value: '1', // 调整间隔
+                value: max>30?'1': max<=30 && max>10 ? '0.5' : '0.1', // 调整间隔
                 name: '',
                 itemStyle: {
                 normal: {
@@ -298,5 +303,11 @@
         left: 0;
         top: 0;
         transform: translate(1.525vw,1.525vw);
+    }
+    .text{
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        padding-right: 0.5vw;
     }
 </style>
