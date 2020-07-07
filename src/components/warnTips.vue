@@ -1,7 +1,7 @@
 <template>
-    <div class="waring-tips" v-show="options.msgForecast">
+    <div class="waring-tips" v-show="msgForecast">
         <img src="../assets/image/atmosphere/tips.png" />
-        <div>{{options.msgForecast}}</div>
+        <div>{{msgForecast}}</div>
     </div>
 </template>
 
@@ -9,7 +9,7 @@
     export default {
         name: "warnTips",
         props:{
-            options:Object
+            msgForecast:String
         }
     }
 </script>
@@ -18,7 +18,7 @@
     .waring-tips{
         width: 100%;
         height: 2.96vh;
-        margin-top: 2.4vh;
+        /*margin-top: 2.4vh;*/
         display: flex;
         align-items: center;
         padding: 0 0.93vh;

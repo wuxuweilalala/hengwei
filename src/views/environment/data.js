@@ -21,24 +21,32 @@ export let mq_headerList = [
         name: "序号",
         width: "2vw",
         style: {
-            // marginLeft:'0',
+            marginLeft:'0',
             width: "1vw",
         }
     },
     {
         name: "点位名称",
         width: "4vw",
+        style: {
+            // marginLeft:'0',
+            width: "3.5vw",
+        }
     },
     {
         name: "水质类别",
         width: "4vw",
+        style: {
+            // marginLeft:'0',
+            width: "3.5vw",
+        }
     },
     {
         name: "目标类别",
         width: "4vw",
         style: {
             // marginLeft:'0',
-            // width: "4.5vw",
+            width: "3.5vw",
         }
     },
     {
@@ -48,7 +56,7 @@ export let mq_headerList = [
         isReach:true,
         style: {
             // marginLeft:'0',
-            width: "4vw",
+            width: "3vw",
         }
     }
 ]
@@ -72,7 +80,7 @@ export let rp_tableOption= {
     tableHeaderStyle: {},
     tableTbodyStyle: {
         width: "56.09vw",
-        height: "16.11vh"
+        height: "16vh"
     },
     tableTrstyle: {},
     isTableHeaderLine: true, // 表头分割线是否使用
@@ -82,27 +90,30 @@ export let rp_tableOption= {
 export let rp_headerList_warn = [   //预警
     {
         name: "序号",
-        width: "5vw",
+        width: "4vw",
         style: {
-            width: "3vw",
+            width: "2vw",
         }
     },
     {
         name: "监控点名称",
         width: "14vw",
         style: {
-            width: "15vw",
+            width: "12vw",
         }
     },
     {
         name: "可疑因子",
         width: "10vw",
+        style: {
+            width: "8vw",
+        }
     },
     {
         name: "可疑数据描述",
         width: "10vw",
         style: {
-            width: "8vw",
+            width: "7vw",
         }
     },
     {
@@ -112,12 +123,17 @@ export let rp_headerList_warn = [   //预警
         isWarnSyle:true,
         isWarnSyleText:true,
         style: {
+            width: "8vw",
             marginLeft: "1vw",
         }
     },
     {
         name: "可疑开始时间",
         width: "10vw",
+        style: {
+            width: "8vw",
+            // marginLeft: "1vw",
+        }
     },
     {
         name: "可疑结束时间",
@@ -127,46 +143,51 @@ export let rp_headerList_warn = [   //预警
 export let rp_headerList_forecast = [//预报
     {
         name: "序号",
-        width: "5vw",
+        width: "3vw",
         style: {
-            width: "3vw",
+            width: "2vw",
         }
     },
     {
         name: "监控点名称",
-        width: "14vw",
+        width: "11vw",
         style: {
-            width: "15vw",
+            width: "10vw",
         }
     },
     {
         name: "可疑因子",
-        width: "9vw",
+        width: "6vw",
+        style: {
+            width: "4vw",
+        }
+    },
+    {
+        name: "预警状态",
+        width: "6vw",
+        isWarnSyle:true,
+        isWarnSyleText:true,
+        style: {
+            width: "4vw",
+        }
+    },
+    {
+        name: "可疑开始时间",
+        width: "8vw",
+    },
+    {
+        name: "可疑结束时间",
+        width: "8vw",
         style: {
             width: "8vw",
         }
     },
     {
-        name: "预警状态",
-        width: "10vw",
-        isWarnSyle:true,
-        isWarnSyleText:true,
-        // textArr: ['一般污染','中度污染','重度污染']
-    },
-    {
-        name: "可疑开始时间",
-        width: "12vw",
-    },
-    {
-        name: "可疑结束时间",
-        width: "12vw",
-        style: {
-            width: "13vw",
-        }
-    },
-    {
         name: "执行人",
         width: "6vw",
+        style: {
+            width: "5vw",
+        }
     },
     {
         name: "任务状态",
@@ -213,21 +234,30 @@ export let sp_headerList = [
     {
         name: "企业名称",
         width: "4vw",
+        style: {
+            width: "3vw",
+        }
     },
     {
         name: "污染等级",
         width: "3.8vw",
+        style: {
+            width: "2vw",
+        }
     },
     {
         name: "排污口等级",
         width: "4.5vw",
         style: {
-            width: "2.5vw",
+            width: "2vw",
         }
     },
     {
         name: "排污特征",
         width: "4.5vw",
+        style: {
+            width: "3.5vw",
+        }
     },
     {
         name: "主要污染物",

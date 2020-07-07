@@ -1,20 +1,17 @@
 <template>
     <div :class="[{'situation-map':secondsId==='态势地图'},'basic-map']">
-        <v-chart v-show="chartShow"
-          :options="chartOptions"
-          autoresize
-          ref="instanceMap"></v-chart>
+        <div v-show="chartShow"  ref="instanceMap" class="map3d" style="width: 100%;height: 100%"></div>
         <v-chart v-show="situationShow"
           :options="situationOptions"
           autoresize
         ></v-chart>
-        <img v-show="!situationShow"
-          :class="[data.type=='1'?'pollution-img':currentIndex===index?'controlMax-img':'control-img']"
-          :ref='`markImg${index}`'
-          :src='setToggle(data)'
-          @click.stop="toToggle(data,index)"
-          v-for="(data,index) in list"
-        />
+<!--        <img v-show="!situationShow"-->
+<!--          :class="[data.type=='1'?'pollution-img':currentIndex===index?'controlMax-img':'control-img']"-->
+<!--          :ref='`markImg${index}`'-->
+<!--          :src='setToggle(data)'-->
+<!--          @click.stop="toToggle(data,index)"-->
+<!--          v-for="(data,index) in list"-->
+<!--        />-->
 
     </div>
 
@@ -23,13 +20,14 @@
 <script>
     let goodsData = require('../../public/mapJson/shenzhen.json');
     import vECharts from 'vue-echarts';
+    import 'three-orbitcontrols'
     import 'echarts/map/js/china';
     import 'echarts-gl/dist/echarts-gl.min';
     import 'echarts/lib/chart/effectScatter';
     import 'echarts/lib/chart/heatmap';
     import 'echarts/lib/component/visualMap'
     import "echarts/extension/bmap/bmap.js";
-
+    import GeoMap from '../utils/map'
     export default {
         name: 'basicPie',
         data() {
@@ -37,7 +35,6 @@
                 chartShow: true,
                 situationShow: false,
                 currentIndex: -1,
-                chartOptions: '',
                 situationOptions: {
                     visualMap: {
                         left: 'right',
@@ -55,7 +52,6 @@
                         }
                     },
                     bmap: {
-                        // center: [95.97, 29.71],
                         center: [114.06667, 22.61667],//深圳
                         zoom: 10,
                         roam: true,
@@ -179,7 +175,14 @@
                             opacity: 0.7
                         }
                     }]
-                }
+                },
+                geoMap:'',
+              basicList: [
+                  {position: ['113.92706199999998', '22.542736'],status:'medium',type:1},
+            {position: ['113.93299300000001', '22.507888'],status:'city',type:2},
+            {position: ['113.99469899999997', '22.523346'],status:'province',type:2},
+            {position: ['113.99069899999997', '22.723346'],status:'mild',type:1},
+        ]
             }
         },
         props: {
@@ -196,7 +199,7 @@
             // },
             setToggle() {
                 return (data) => {
-                    let self = this
+                    // let self = this
                     let symbol = null
                     // var seriesModel = self.$refs.instanceMap.chart.getModel().getSeriesByIndex(0);//获取当前图例
                     // var coordSys = seriesModel.coordinateSystem;//// 获取地理坐标系实例
@@ -396,22 +399,21 @@
                 return options
 
             },
-            setPosition() {
-                let self = this;
-                var seriesModel = self.$refs.instanceMap.chart.getModel().getSeriesByIndex(0);//获取当前图例
-                var coordSys = seriesModel.coordinateSystem;//// 获取地理坐标系实例
-
-                for (let i in this.list) {
-                    var point = coordSys.dataToPoint(this.list[i].position); // dataToPoint 相当于 getPosByGeo 把经纬度转为X、Y轴
-                    self.$refs[`markImg${i}`][0].style.left = point[0] + 'px';
-                    self.$refs[`markImg${i}`][0].style.top = point[1] + 'px';
-                    //     document.querySelector('.markImg'+i).style.left=point[0]+'px';
-                    //     document.querySelector('.markImg'+i).style.top=point[1]+'px';
-                }
-            },
+            // setPosition() {
+            //     let self = this;
+            //     var seriesModel = self.$refs.instanceMap.chart.getModel().getSeriesByIndex(0);//获取当前图例
+            //     var coordSys = seriesModel.coordinateSystem;//// 获取地理坐标系实例
+            //
+            //     for (let i in this.list) {
+            //         var point = coordSys.dataToPoint(this.list[i].position); // dataToPoint 相当于 getPosByGeo 把经纬度转为X、Y轴
+            //         self.$refs[`markImg${i}`][0].style.left = point[0] + 'px';
+            //         self.$refs[`markImg${i}`][0].style.top = point[1] + 'px';
+            //         //     document.querySelector('.markImg'+i).style.left=point[0]+'px';
+            //         //     document.querySelector('.markImg'+i).style.top=point[1]+'px';
+            //     }
+            // },
             toToggle(item, index) { //污染源弹窗的切换
                 console.log('toToggle',item, index)
-                let self = this
                 this.currentIndex = index
                 this.$emit('showPop',item)
                 if (item.type === 1) return
@@ -452,9 +454,9 @@
                 if (!this.secondsId) { //只显示透视图，无叠加东西
                     this.situationShow = false
                     this.chartShow = true
-                    for (let i in self.chartOptions.geo) {
-                        self.$set(self.chartOptions.geo[i], 'regions', [])
-                    }
+                    // for (let i in self.chartOptions.geo) {
+                    //     self.$set(self.chartOptions.geo[i], 'regions', [])
+                    // }
                     if(old=== '噪声态势图（等值线图）') {
                         self.$set(self.chartOptions.series[1], 'data',[] )
                     }
@@ -467,7 +469,6 @@
             //     this.situationOptions.series[0].data = res
             // })
             this.chartOptions = this.setChartOptions();
-            console.log('this.chartOptions',this.chartOptions,1)
         },
         watch: {
             secondsId: {
@@ -477,10 +478,16 @@
                         this.changeChart(val,old)
                     })
                 }
+            },
+            'geoMap.mapGroup'(val){
+                if(val&&val.name){
+                    this.geoMap.drawMarker(this.basicList);
+                }
             }
         },
         mounted() {
-            this.setPosition()
+            this.geoMap = new GeoMap();
+            this.geoMap.init();
 
         }
     };
@@ -491,8 +498,6 @@
         width: 100%;
         height: 100%;
         position: absolute;
-        top: -11%;
-
         img {
             position: absolute;
             cursor: pointer;

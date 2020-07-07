@@ -34,48 +34,102 @@
     </div>
 <!--    <div v-if="isTableHeaderLine" v-html="tableHeaderLine"></div>-->
     <div class="proportionTableDate" :style="{...tableTbodyStyle}">
-      <div
-        v-for="(itemList, index) in data"
-        :key="index"
-        class="proportionTableTr"
-        :style="{...tableTrstyle,}"
-      >
-        <div
-          v-for="(item,subIndex) in itemList"
-          :key="subIndex"
-          :style="{
+      <template v-if="!showSwiper">
+        <template v-for="(itemList, index) in data">
+          <div
+                  :key="index"
+                  class="proportionTableTr"
+                  :style="{...tableTrstyle}"
+          >
+            <div
+                    v-for="(item,subIndex) in itemList"
+                    :key="subIndex"
+                    :style="{
             width: tableHeaderList[subIndex].width,
             marginLeft: tableHeaderList[subIndex].marginLeft,
             marginRight: tableHeaderList[subIndex].marginRight,
             ...tableHeaderList[subIndex].style,
             color:setFontColor(subIndex,index)}"
-          class="proportionTableTd"
-        >
-          <div
-            v-if="tableHeaderList[subIndex].isNoiseGrade"
-            :class="setNoiseGradeDot(item)"
-          ></div>
-          <div
-                  v-if="tableHeaderList[subIndex].isGrade"
-                  :class="setGradeDot(item)"
-          ></div>
-          <div v-if="tableHeaderList[subIndex].isReach"
-               :class="setReachDot(item)"
-          ></div>
-          <div v-if="tableHeaderList[subIndex].isWarnSyle"
-               :class="[setWarnSyle(item),'ICON','warnStyleIcon']"
-          ></div>
-          <div :class="['text',`${setColor(item,subIndex)}`]"  :title="item">
-            {{tableHeaderList[subIndex].isReach
-            ||tableHeaderList[subIndex].isReach_i ? (item?'达标':'不达标'):
-            tableHeaderList[subIndex].isDispose?(item==0?'未处理':item==1?'处理中':'已处理'):
-            tableHeaderList[subIndex].isWarnSyle&&tableHeaderList[subIndex].isWarnSyleText?
-            (item==1?'白色预警':item==2?'黄色预警':item==3?'红色预警':''):
-            tableHeaderList[subIndex].isGrade?(item==1?tableHeaderList[subIndex].textArr[0]:item==2?tableHeaderList[subIndex].textArr[1]:tableHeaderList[subIndex].textArr[2]):
-            item}}
+                    class="proportionTableTd"
+            >
+              <div
+                      v-if="tableHeaderList[subIndex].isNoiseGrade"
+                      :class="setNoiseGradeDot(item)"
+              ></div>
+              <div
+                      v-if="tableHeaderList[subIndex].isGrade"
+                      :class="setGradeDot(item)"
+              ></div>
+              <div v-if="tableHeaderList[subIndex].isReach"
+                   :class="setReachDot(item)"
+              ></div>
+              <div v-if="tableHeaderList[subIndex].isWarnSyle"
+                   :class="[setWarnSyle(item),'ICON','warnStyleIcon']"
+              ></div>
+              <div :class="['text',`${setColor(item,subIndex)}`]"  :title="item">
+                {{tableHeaderList[subIndex].isReach
+                ||tableHeaderList[subIndex].isReach_i ? (item?'达标':'不达标'):
+                tableHeaderList[subIndex].isDispose?(item==0?'未处理':item==1?'处理中':'已处理'):
+                tableHeaderList[subIndex].isWarnSyle&&tableHeaderList[subIndex].isWarnSyleText?
+                (item==1?'白色预警':item==2?'黄色预警':item==3?'红色预警':''):
+                tableHeaderList[subIndex].isGrade?(item==1?tableHeaderList[subIndex].textArr[0]:item==2?tableHeaderList[subIndex].textArr[1]:tableHeaderList[subIndex].textArr[2]):
+                item}}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
+      </template>
+      <template v-else>
+        <Swiper :options="swiperOption" >
+          <template v-for="(itemList, index) in data">
+            <swiper-slide>
+              <div
+                      :key="index"
+                      class="proportionTableTr"
+                      :style="{...tableTrstyle,height:'10px'}"
+              >
+                <div
+                        v-for="(item,subIndex) in itemList"
+                        :key="subIndex"
+                        :style="{
+            width: tableHeaderList[subIndex].width,
+            marginLeft: tableHeaderList[subIndex].marginLeft,
+            marginRight: tableHeaderList[subIndex].marginRight,
+            ...tableHeaderList[subIndex].style,
+            color:setFontColor(subIndex,index)}"
+                        class="proportionTableTd"
+                >
+                  <div
+                          v-if="tableHeaderList[subIndex].isNoiseGrade"
+                          :class="setNoiseGradeDot(item)"
+                  ></div>
+                  <div
+                          v-if="tableHeaderList[subIndex].isGrade"
+                          :class="setGradeDot(item)"
+                  ></div>
+                  <div v-if="tableHeaderList[subIndex].isReach"
+                       :class="setReachDot(item)"
+                  ></div>
+                  <div v-if="tableHeaderList[subIndex].isWarnSyle"
+                       :class="[setWarnSyle(item),'ICON','warnStyleIcon']"
+                  ></div>
+                  <div :class="['text',`${setColor(item,subIndex)}`]"  :title="item">
+                    {{tableHeaderList[subIndex].isReach
+                    ||tableHeaderList[subIndex].isReach_i ? (item?'达标':'不达标'):
+                    tableHeaderList[subIndex].isDispose?(item==0?'未处理':item==1?'处理中':'已处理'):
+                    tableHeaderList[subIndex].isWarnSyle&&tableHeaderList[subIndex].isWarnSyleText?
+                    (item==1?'白色预警':item==2?'黄色预警':item==3?'红色预警':''):
+                    tableHeaderList[subIndex].isGrade?(item==1?tableHeaderList[subIndex].textArr[0]:item==2?tableHeaderList[subIndex].textArr[1]:tableHeaderList[subIndex].textArr[2]):
+                    item}}
+                  </div>
+                </div>
+              </div>
+            </swiper-slide>
+          </template>
+          <div class="swiper-scrollbar"></div>
+        </Swiper>
+      </template>
+
     </div>
   </div>
 </template>
@@ -110,12 +164,16 @@
  * @时间 2020/06/16 12:52:25
  */
 import DropDownComponent from "./DropDownComponent";
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+import {table_swiperOption,vhTopx} from './swiperOption'
 
 export default {
   components: {
-    DropDownComponent
+    DropDownComponent,
+    Swiper,
+    SwiperSlide
   },
-  props: ["tableHeaderList", "data", "tableOption",'taskClass'],
+  props: ["tableHeaderList", "data", "tableOption",'taskClass','showNum'],
   computed: {
     isTableHeaderLine() {
       return this.tableOption.isTableHeaderLine;
@@ -138,11 +196,13 @@ export default {
   },
   data() {
     return {
+      swiperOption:JSON.parse(JSON.stringify(table_swiperOption)),
       classList: [
         {
           label:'任务类型'
         }
       ],
+      showSwiper: false,
       dropdownOptionListStyle: {
         // width:'8vw'
 
@@ -151,6 +211,11 @@ export default {
     }
   },
   created() {
+    this.showSwiper = this.showNum && this.data.length>this.showNum
+    this.swiperOption.slidesPerView = this.showNum
+    this.swiperOption.height = vhTopx(3*this.showNum/5)*5
+    // console.log(this.slidesPerView,this.data.length,this.slidesPerView && this.data.length>this.slidesPerView)
+    // console.log(this.slidesPerView)
     if (this.taskClass) {
       let arr = []
       this.taskClass.forEach(item => {
@@ -285,12 +350,14 @@ export default {
 
   }
   }
-  .proportionTableDate {
-    width: 56.09vw;
-    height: 16.11vh;
-  }
+  /*.proportionTableDate {*/
+  /*  width: 56.09vw;*/
+  /*  height: 16.11vh;*/
+  /*}*/
   .proportionTableTr {
     display: flex;
+    height: 4.07vh;
+    line-height: 4.07vh;
     &:nth-child(odd) {
       height: 4.07vh;
       line-height: 4.07vh;
@@ -371,4 +438,22 @@ export default {
   .disposed{
     color: rgba(255, 255, 255, 1);
   }
+</style>
+<style scoped lang="scss">
+  .swiper-container{
+    height: 100%;
+    .swiper-slide{
+      display: flex;
+      align-items: center;
+      &:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .proportionTableTr {
+        display: flex;
+        height: 4.07vh!important;
+        line-height: 4.07vh;
+      }
+    }
+  }
+
 </style>

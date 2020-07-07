@@ -72,7 +72,7 @@ export let wr_headerList = [
 ]
 export let wr_tableOption= {
     tableStyle: {
-        height: "16.8vh",
+        height: "16vh",
         width: "100%",
         margin: "0 auto"
     }, // 表格样式
@@ -81,7 +81,7 @@ export let wr_tableOption= {
     },
     tableTbodyStyle: {
         width: "100%",
-        height: "16.8vh"
+        height: "16vh"
     },
     tableTrstyle: {},
     // isTableHeaderLine: true, // 表头分割线是否使用

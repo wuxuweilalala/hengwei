@@ -150,6 +150,6 @@ export default {
   }
 }
 .addBGC{
-  background: rgb(15, 19, 32)!important;
+  background: rgba(0, 43, 88, 1)!important;
 }
 </style>

@@ -27,14 +27,29 @@
         <!--         监测区域内噪声等级占比情况-->
         <div class="areaWarnInfo bg_c lineshadow">
           <chart-title :title="'监测区域内噪声等级占比情况'" w="60%"/>
-          <ul v-if="airGradeList">
-            <li class="pictorialBarItem" v-for="(item,index) in airGradeList" :key="index">
-              <div class="f_r_between">
-                <div>{{item.areaName}}</div>
-                <div>{{item.valDB}}</div>
-              </div>
-              <PictorialBar :val="item.rate" :grade="item.grade"/>
-            </li>
+          <ul v-if="airGradeList" class="areaWarn-ul">
+            <Swiper :options="swiperOption"  v-if="airGradeList.length>5">
+              <template v-for="(item,index) in airGradeList">
+                <swiper-slide>
+                  <li class="pictorialBarItem"  :key="index">
+                    <div class="f_r_between">
+                      <div>{{item.areaName}}</div>
+                      <div>{{item.valDB}}</div>
+                    </div>
+                    <PictorialBar :val="item.rate" :grade="item.grade"/>
+                  </li>
+                </swiper-slide>
+              </template>
+            </Swiper>
+            <template v-else>
+                <li class="pictorialBarItem"  v-for="(item,index) in airGradeList" :key="index">
+                  <div class="f_r_between">
+                    <div>{{item.areaName}}</div>
+                    <div>{{item.valDB}}</div>
+                  </div>
+                  <PictorialBar :val="item.rate" :grade="item.grade"/>
+                </li>
+            </template>
           </ul>
         </div>
       </div>
@@ -46,12 +61,12 @@
         <!--        噪声监测实时数据-->
         <div class="noisedata_real bg_c lineshadow">
           <chart-title :title="'噪声监测实时数据'" w="40%"/>
-          <TableComponent :tableHeaderList="nr_headerList" :tableOption="tableOption_2" :data="nr_spListList" />
+          <TableComponent :tableHeaderList="nr_headerList" :tableOption="tableOption_2" :data="nr_spListList" :showNum="6"/>
         </div>
         <!--        功能区噪声标准及实际监测情况对照-->
         <div class="noiseContrast bg_c lineshadow">
           <chart-title :title="'功能区噪声标准及实际监测情况对照'" w="40%"/>
-          <TableComponent :tableHeaderList="nc_headerList" :tableOption="tableOption_1" :data="nc_spListList" />
+          <TableComponent :tableHeaderList="nc_headerList" :tableOption="tableOption_1" :data="nc_spListList" :showNum="5"/>
         </div>
       </div>
     </page-layout>
@@ -59,16 +74,14 @@
       <div class="warnInfo bg_c lineshadow">
         <!--        噪声超标预警信息-->
         <chart-title :title="'噪声超标预警信息'" w="10%"/>
-        <TableComponent :tableHeaderList="wi_headerList" :tableOption="tableOption" :data="wi_spListList" />
+        <TableComponent :tableHeaderList="wi_headerList" :tableOption="tableOption" :data="wi_spListList" :showNum="5"/>
       </div>
       <div class="forecastInfo bg_c lineshadow">
-        <!--        噪声超标预报信息-->
-        <chart-title :title="'噪声超标预报信息'" w="10%"/>
-        <TableComponent :tableHeaderList="fi_headerList" :tableOption="tableOption" :data="fi_spListList" />
+        <!--        噪声超标响应信息-->
+        <chart-title :title="'噪声超标响应信息'" w="10%"/>
+        <TableComponent :tableHeaderList="fi_headerList" :tableOption="tableOption" :data="fi_spListList" :showNum="5"/>
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -85,6 +98,8 @@ import TerritoryClass from "../../components/TerritoryClass";
 import PictorialBar from "../../components/PictorialBar";
 import Popup from "../../components/Popup";
 import toggleMap from "../../components/toggleMap";
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+import {noise_swiperOption} from '../../components/common/swiperOption'
 
 export default {
   name: "Noise",
@@ -96,10 +111,13 @@ export default {
     TableComponent,
     WaterPolo,
     Popup,
-    toggleMap
+    toggleMap,
+    Swiper,
+    SwiperSlide
   },
   data() {
     return {
+      swiperOption:JSON.parse(JSON.stringify(noise_swiperOption)),
       fi_headerList:fi_headerList,
       wi_headerList:wi_headerList,
       nc_headerList:nc_headerList,
@@ -146,6 +164,7 @@ export default {
           // this.airQualityObj =  res.data
           // this.dataDispose(1,res.data.aqiRankTable)
           this.airGradeList = res.data
+          // console.log('this.airGradeList',this.airGradeList)
         } else {
           console.log(res.err_msg)
         }
@@ -155,9 +174,9 @@ export default {
       this.$get('/i503NoiseEarlyWarning').then(res => {
         if (res.code == 0) {
           this.airQualityTable =  res.data
-
-          this.showTable = true
           this.dataDispose()
+          this.showTable = true
+
           console.log(this.airQualityTable)
         } else {
           console.log(res.err_msg)
@@ -324,7 +343,21 @@ export default {
     margin-top: 0.48vh;
     color:#fff
   }
-
+.areaWarn-ul{
+  height: 21vh;
+}
 
 </style>
 
+<style scoped lang="scss">
+  .swiper-container{
+    height: 100%;
+    .swiper-slide{
+      display: flex;
+      align-items: center;
+      &:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+  }
+</style>

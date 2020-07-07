@@ -51,7 +51,7 @@
         <chart-title :title="'地表水水质实时一览表'" w="0"/>
         <div class="mq-content">
           <div class="mq-listData">
-            <TableComponent :tableHeaderList="mq_headerList" :tableOption="mq_tableOption" :data="mq_spListList" />
+            <TableComponent v-if="mq_spListList" :tableHeaderList="mq_headerList" :tableOption="mq_tableOption" :data="mq_spListList" :showNum="10"/>
           </div>
         </div>
       </div>
@@ -59,6 +59,15 @@
     <div class="environment-center ">
       <div class="map">
         <toggleMap :id="'environment'"/>
+        <div class="mapWarnTips">
+          <Swiper :options="swiperOption"  v-if="[1,1,1,1,1,1]">
+            <template v-for="(item, index) in ['1','1','1','1','1','1']">
+              <swiper-slide :key="index">
+                <WarnTips :msgForecast="item" />
+              </swiper-slide>
+            </template>
+          </Swiper>
+        </div>
       </div>
       <div class="riverPollution chart_bg">
         <chart-title :title="'河流断面、污水厂、水污染源预警预报轮播一览'" w="0"/>
@@ -71,7 +80,7 @@
             </ul>
           </div>
           <div class="rp-listData">
-            <TableComponent :tableHeaderList="rp_headerList" :tableOption="rp_tableOption" :data="rp_spListList" />
+            <TableComponent v-if="rp_spListList" :tableHeaderList="rp_headerList" :tableOption="rp_tableOption" :data="rp_spListList" :showNum="5" />
           </div>
         </div>
       </div>
@@ -99,12 +108,22 @@
         <div class="sp2-content">
           <div class="selectBox">
             <div class="selectList f_r_between" v-if="waterquanlityObj.selectArr">
-              <SelectComponent :selectList="companyName" :selectOptionStyle="selectOptionStyle" :selectOption="companyName.selectOption"/>
-              <SelectComponent :selectList="kmNum" :selectOptionStyle="selectOptionStyle" :selectOption="kmNum.selectOption"/>
+              <SelectComponent
+                      :selectList="companyName"
+                      :selectOptionStyle="selectOptionStyle"
+                      :selectOption="companyName.selectOption"
+                      @changeSelectItemed="changeSelectFactor"
+                      />
+              <SelectComponent
+                      :selectList="kmNum"
+                      :selectOptionStyle="selectOptionStyle"
+                      :selectOption="kmNum.selectOption"
+                      @changeSelectItemed="changeSelectRange"
+              />
             </div>
           </div>
           <div class="sp-listData">
-            <TableComponent :tableHeaderList="sp_headerList" :tableOption="sp_tableOption" :data="sp_spListList" />
+            <TableComponent v-if="sp_spListList" :tableHeaderList="sp_headerList" :tableOption="sp_tableOption" :data="sp_spListList" :showNum="12"/>
           </div>
         </div>
       </div>
@@ -121,13 +140,16 @@
   import SelectComponent from '../../components/common/SelectComponent'
   import TableComponent from "../../components/common/TableComponent";
   import basicPie from "../../components/basicPie";
+  import ToggleMap from "../../components/toggleMap";
+  import WarnTips from '../../components/warnTips'
+  import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+  import {forecast_swiperOption} from '../../components/common/swiperOption'
   import {
     rp_headerList_warn,rp_spListList,rp_tableOption,rp_headerList_forecast,
     mq_headerList,mq_spListList,mq_tableOption,
     sp_headerList,sp_spListList,sp_tableOption,
-} from './data.js'
-  import ToggleMap from "../../components/toggleMap";
-    
+  } from './data.js'
+
   export default {
     name: "Environment",
     components: {
@@ -138,19 +160,23 @@
       basicPie,
       WaterPolo,
       SelectComponent,
+      WarnTips,
+      Swiper,
+      SwiperSlide
     },
     data() {
       return{
+        swiperOption:JSON.parse(JSON.stringify(forecast_swiperOption)),
         activeIndex:0,
         tabList:['预警','预报'],
         // rp_headerList:rp_headerList_warn,
-        rp_spListList:[],
+        rp_spListList:null,
         rp_tableOption:rp_tableOption,
         mq_headerList:mq_headerList,
-        mq_spListList:[],
+        mq_spListList:null,
         mq_tableOption:mq_tableOption,
         sp_headerList:sp_headerList,
-        sp_spListList:[],
+        sp_spListList:null,
         sp_tableOption:sp_tableOption,
         waterInfoObj: {}, //水环境概况描述
         waterInfoList:[],
@@ -173,7 +199,9 @@
         waterquanlityObj:{},
         companyName: [],
         kmNum:[],
-        showBasicLine:false
+        showBasicLine:false,
+        factor:null,
+        range:null
       }
     },
     computed: {
@@ -274,6 +302,16 @@
             this.showBasicLine = true
           })
       },
+      changeSelectFactor(val) {
+        console.log(val)
+        this.factor = val.value
+        this.getWaterquanlitytable()
+      },
+      changeSelectRange(val) {
+        console.log(val)
+        this.range = val.value
+        this.getWaterquanlitytable()
+      },
       initData() {
         this.getWatersumaryall()
         this.getMonitoring()
@@ -304,7 +342,7 @@
       getWaterQuality() {//地表水水质实时一览表
         this.$get('/i203waterquanlityreal').then(res => {
           if (res.code == 0) {
-            console.log(1)
+            // console.log(1)
             this.dataDispose(3,res.data)
           } else {
             console.log(res.err_msg)
@@ -314,7 +352,7 @@
       getWateralerttable() {//河流断面、污水厂、水污染源预警预报轮播一览
         this.$get('/i204wateralerttable').then(res => {
           if (res.code == 0) {
-            console.log('轮播',res.data)
+            // console.log('轮播',res.data)
             this.wateralerttable = res.data
             if (!res.data.earlyWarn) return
             this.dataDispose(4,res.data.earlyWarn,null,'warn')
@@ -326,7 +364,7 @@
       getWaterweekchart() { //污水厂进出水水质达标情况
         this.$get('/i205waterweekchart').then(res => {
           if (res.code == 0) {
-            console.log('水质达标情况',res.data)
+            // console.log('水质达标情况',res.data)
             this.waterweekObj = res.data
             this.waterweekSelected = res.data.currentSelected
             this.waterweekObj.selectOption = {
@@ -340,9 +378,16 @@
         })
       },
       getWaterquanlitytable() { //污水厂进出水水质达标情况
-        this.$get('/i206waterquanlitytable').then(res => {
+        let params = {}
+        if (this.factor) {
+          params.factor = this.factor
+        }
+        if (this.range) {
+          params.range = this.range
+        }
+        this.$get('/i206waterquanlitytable',params).then(res => {
           if (res.code == 0) {
-            console.log('res.data',res.data)
+            // console.log('res.data',res.data)
             this.waterquanlityObj = res.data
             this.companyName = res.data.selectArr[0].selectList
             this.kmNum = res.data.selectArr[1].selectList
@@ -391,38 +436,22 @@
             }
           })
           if(index==3) {
-            // newArr.push({
-            //           fontColor: 'red',
-            //           isChangeColor:true
-            // })
-            // console.log('newArr',newArr)
-            // this.setOption
             this.mq_spListList = newArr
           } else if(index==4) {
             this.rp_spListList = newArr
           } else if(index==6) {
-            console.log( 'this.rp_spListList',newArr)
-
             this.sp_spListList = newArr
           }
         }
       },
       getMatchArr(arr,key) {
-        console.log(arr)
+        // console.log(arr)
         for (let i = 0;i<arr.length ; i++) {
           if (arr[i].lineLabel === key) {
             return arr[i]
           }
         }
       },
-      // setOption(arr) {
-      //   arr.forEach(item => {
-      //     item.push({
-      //       fontColor: 'red',
-      //       isChangeColor:true
-      //     })
-      //   })
-      // }
     },
   }
 </script>
@@ -456,12 +485,16 @@
     .map{
       position: relative;
       width: 100%;
-      height: 57vh;
+      height: 52vh;
       .chartNav{
         position: absolute;
         right: 0;
         top: 0;
         z-index: 9;
+      }
+      .mapWarnTips{
+        height: 2.96vh;
+        margin-top: 2vh;
       }
     }
     .riverPollution{
@@ -470,7 +503,7 @@
       left: 0;
       width: 100%;
       padding: 1.85vh 1vw 0;
-      background-color: rgba(15, 19, 32, 0.8);
+      background-color: rgba(4, 11, 39, 0.6);
       box-sizing: border-box;
     }
   }
@@ -501,7 +534,7 @@
 
   .chart_bg{
     padding: 0 1.04vw;
-    background-color: rgba(15, 19, 32, 0.8);
+    background-color: rgba(4, 11, 39, 0.6);
   }
   .tab-container{
     position: relative;
@@ -722,5 +755,15 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
+  }
+</style>
+
+<style scoped lang="scss">
+  .swiper-container{
+    height: 100%;
+    .swiper-slide{
+      display: flex;
+      align-items: center;
+    }
   }
 </style>

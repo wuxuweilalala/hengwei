@@ -1,11 +1,14 @@
 <template>
     <div class="toggleMap">
+<!--        <MapIcon/>-->
 <!--        右侧按钮-->
         <chartToggle :currChartIndex.sync="currChartIndex"/>
         <!--        左侧切换按钮-->
         <div class="toggle-list"
           v-show="id!='other'">
-             <div :class="['toggle-tips', {'box-1':$route.path=='/noise'}]" v-if="$route.path!=='/environment'">
+             <div :class="['toggle-tips']"
+                  :style="{width:$route.path==='/atmosphere'?'16vw':''}"
+                  v-if="$route.path!=='/environment'">
                 <ul>
                     <li v-for="(item,index) in toggleList[id].value"
                       :key="index"
@@ -91,7 +94,8 @@
     import Popup from "./Popup";
     import gaodeMap from "./gaodeMap"; //高德地图
     import chartToggle from "./chartToggle"; //地图选择
-    import basicMap from "./basicMap";  //基础3d地图
+    import basicMap from "./basicMap";
+    import MapIcon from "./MapIcon";
     export default {
         name: "toggleMap",
         props: {
@@ -104,19 +108,19 @@
             return {
                 currSecondsId:'',
                 environmentMapToggle:[
-                    {name:'网管叠加',isShow:false},{name:'流域叠加',isShow:false}
+                    {name:'管网叠加',isShow:false},{name:'流域叠加',isShow:false}
                 ] ,
                 flowchart:'',
                 showpolluteBar:false,
                 showFlowPop:false,
                 mapName: ['gaodeMap', 'gaodeMap', 'basicMap'],
-                currChartIndex: 0,
+                currChartIndex: 2,
                 windText:{},
                 toggleList: {
-                    noise: {value: ['噪声态势图']},
-                    environment: {value: ['网管叠加', "流域叠加"]},
+                    noise: {value: ['噪声态势图','热力图']},
+                    environment: {value: ['管网叠加', "流域叠加"]},
                     atmosphere: {
-                        value: ['态势地图', '色阶统计图'],
+                        value: ['态势地图', '色阶统计图','热力图'],
                         detail: {
                             speed: '',
                             direction: '',
@@ -189,7 +193,7 @@
                     } else {
                         componentName = this.currChartIndex==-1?this.mapName[2]:this.mapName[this.currChartIndex]
                     }
-                    if (this.secondsId==='色阶统计图' || this.secondsId==='噪声态势图') {
+                    if (this.secondsId==='色阶统计图' || this.secondsId==='噪声态势图' || this.secondsId==='热力图') {
                         componentName = 'gaodeMap'
                     }
                     return  componentName
@@ -198,6 +202,7 @@
             }
         },
         components: {
+            MapIcon,
             gaodeMap,
             chartToggle,
             basicMap,
@@ -210,10 +215,12 @@
               this.toggleList.atmosphere.detail.direction=val.direction
             },
             getChartData() {
-                this.$get('/i601Perspective').then(res => {
+                let params = {
+                    styleClass: this.$route.path.replace('/','')
+                }
+                this.$get('/i601Perspective',params).then(res => {
                     if (res.code == 0) {
                         this.basicList =  res.data
-                        // console.log('res.data',res.data)
                     } else {
                         console.log(res.err_msg)
                     }
@@ -222,6 +229,8 @@
             showData(item) {
                 this.flowchart = item.popUrl
                 this.showFlowPop=true
+                //削减率的code 动态更新数据
+                this.$emit('updateRate',item.code)
             },
             changeIndex(item, i) {
                 if (this.$route.path==='/environment') {
@@ -230,7 +239,7 @@
                     this.currentIndex = i
                     this.secondsId = item
                 }
-                console.log('item, i',item, i)
+                // console.log('item, i',item, i)
             },
             setHole() {
                 var optArr = $.map(adcodes, function (item) {
@@ -267,7 +276,7 @@
                 }
             },
             currentIndex(val) {
-                if(this.secondsId!=='网管叠加'||this.secondsId!=='流域叠加'){
+                if(this.secondsId!=='管网叠加'||this.secondsId!=='流域叠加'){
                     if (val>-1) {
                         this.currChartIndex = -1;
                         // console.log('this.currChartIndex',this.currChartIndex)

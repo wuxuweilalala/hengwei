@@ -39,28 +39,31 @@ export let aq_headerList = [
         width: "3vw",
         style: {
             marginLeft:'0.5vw',
-            width:'1.5vw'
+            width:'1vw'
         }
     },
     {
         name: "区域",
         width: "5.5vw",
         style: {
-            // marginLeft:'0.5vw',
-            width:'6vw'
+            width:'5vw'
         }
     },
     {
         name: "AQI",
-        width: "3vw",
+        width: "2vw",
         style: {
             marginLeft:'0.5vw',
-            // width:'2vw'
+            width:'1vw'
         }
     },
     {
         name: "首要污染物",
         width: "4vw",
+        style: {
+            // marginLeft:'1vw',
+            width:'2.5vw'
+        }
     },
     {
         name: "污染情况",
@@ -77,7 +80,8 @@ export let aw_headerList = [
         width: "3vw",
         style: {
             marginLeft:'0.5vw',
-            width:'1.5vw'
+            // width:'1.5vw'
+            width:'1vw'
         }
     },
     {
@@ -85,28 +89,45 @@ export let aw_headerList = [
         width: "3.5vw",
         style: {
             // marginLeft:'1vw',
-            width:'3.5vw'
+            // width:'3.5vw'
+            width:'2vw'
         }
     },
     {
         name: "因子",
         width: "3.5vw",
         style: {
-            // marginLeft:'1vw',
-            width:'3vw'
+            marginLeft:'1vw',
+            // width:'3vw'
+            width:'2vw'
         }
     },
     {
-        name: "全市均值",
+        name: "均值",
         width: "4vw",
+        style: {
+            // marginLeft:'1vw',
+            // width:'3vw'
+            width:'2vw'
+        }
     },
     {
         name: "目标值",
         width: "4vw",
+        style: {
+            marginLeft:'1.5vw',
+            // width:'3vw'
+            width:'2vw'
+        }
     },
     {
         name: "累计均值",
         width: "4vw",
+        style: {
+            marginLeft:'1vw',
+            // width:'3vw'
+            width:'2vw'
+        }
     }
 ]
 

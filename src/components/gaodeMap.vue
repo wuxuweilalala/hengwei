@@ -1,5 +1,6 @@
 <template>
-    <div id="gaodeMap" class="container"></div>
+    <div id="gaodeMap"
+      class="container"></div>
 </template>
 
 <script>
@@ -7,27 +8,31 @@
     import psRiver from '../assets/mapJson/psRiver.json' //面积
     import psNetwork from '../assets/mapJson/psNetwork.json' //线
     import {mapGetters} from 'vuex';
+
     export default {
         props: {
             isSatellite: Boolean,
             secondsId: String,
             index: Number,
-            currSecondsId:String,
+            currSecondsId: String,
+            list:Array
         },
         data() {
             return {
                 mapObj: null,
                 mapData: null,
                 currentMapName: '',
-                shroudline:null,
-                shroudArea:null,
-                isAddArea:false,
-                isAddLine:false,
-                mapArr:[],
-                 basicList : [
+                shroudline: null,
+                shroudArea: null,
+                isAddArea: false,
+                isAddLine: false,
+                mapArr: [],
+                basicList: [
                     {
                         city: "坪山区",
-                        code: "130100",
+                        // code: "130100",
+                        code: "PS100000040109",
+                        popUrl: "http://share.howaycloud.com:9091/test/A.html",
                         position: [114.350849, 22.708725],
                         provincial: "广东",
                         provincialCode: "4004300",
@@ -35,7 +40,8 @@
                         type: 1,
                     }, {
                         city: "坪山区",
-                        code: "130100",
+                        code: "PS100000010033",
+                        popUrl: "http://share.howaycloud.com:9091/test/A.html",
                         position: [114.300849, 22.708725],
                         provincial: "广东",
                         provincialCode: "4004300",
@@ -43,7 +49,8 @@
                         type: 1,
                     }, {
                         city: "坪山区",
-                        code: "130100",
+                        code: "PS100000010033",
+                        popUrl: "http://share.howaycloud.com:9091/test/A.html",
                         position: [114.200849, 22.700725],
                         provincial: "广东",
                         provincialCode: "4004300",
@@ -51,7 +58,8 @@
                         type: 1,
                     }, {
                         city: "坪山区",
-                        code: "130100",
+                        code: "PS100000010033",
+                        popUrl: "http://share.howaycloud.com:9091/test/A.html",
                         position: [114.000849, 22.658725],
                         provincial: "广东",
                         provincialCode: "4004300",
@@ -59,7 +67,8 @@
                         type: 2,
                     }, {
                         city: "坪山区",
-                        code: "130100",
+                        code: "PS100000010033",
+                        popUrl: "http://share.howaycloud.com:9091/test/A.html",
                         position: [113.900849, 22.705725],
                         provincial: "广东",
                         provincialCode: "4004300",
@@ -67,28 +76,36 @@
                         type: 2,
                     }, {
                         city: "坪山区",
-                        code: "130100",
+                        code: "PS100000010033",
+                        popUrl: "http://share.howaycloud.com:9091/test/A.html",
                         position: [114.000849, 22.625725],
                         provincial: "广东",
                         provincialCode: "4004300",
                         status: "country",
                         type: 2,
                     }],
-                lastClickedMarker:'',
+                lastClickedMarker: '',
             }
         },
-        computed:{
-            ...mapGetters('index',{
-                vwToPx:'vwToPx',
+        computed: {
+            ...mapGetters('index', {
+                vwToPx: 'vwToPx',
             }),
         },
         mounted() {
-            if (this.secondsId!=='色阶统计图'&&this.secondsId!=='噪声态势图') {
-                if (this.index==-1||this.index==0) {
+            console.log('this.secondsId',this.secondsId)
+            if (this.secondsId !== '色阶统计图' && this.secondsId !== '噪声态势图') {
+                if (this.index == -1 || this.index == 0) {
                     this.setSatelliteMap()
                 } else {
                     this.trafficRoute()
                 }
+                if (this.secondsId&&this.secondsId.indexOf('流域叠加')>-1) {
+                    this.setShroudArea()
+                }
+                if (this.secondsId&&this.secondsId.indexOf('管网叠加')>-1) {
+                    this.setShroudline()
+                 }
             }
         },
         methods: {
@@ -148,7 +165,6 @@
             },
             //设置等高线地图
             contourLine() {
-                console.log('33333')
                 var map = new AMap.Map('gaodeMap', {
                     mapStyle: 'amap://styles/e2af95ff879c6da6dcc775196455ff52',
                     viewMode: '3D',
@@ -204,7 +220,7 @@
             setShroudline() {
                 this.shroudline = new AMap.GeoJSON({
                     geoJSON: psNetwork,
-                    extData:{
+                    extData: {
                         id: 1
                     },
                     // 还可以自定义getMarker和getPolyline
@@ -228,7 +244,7 @@
                 console.log('设置坪山河流覆盖物')
                 this.shroudArea = new AMap.GeoJSON({
                     geoJSON: psRiver,
-                    extData:{
+                    extData: {
                         id: 2
                     },
                     // 还可以自定义getMarker和getPolyline
@@ -237,12 +253,13 @@
                             path: lnglats,
                             borderWeight: 10,
                             strokeColor: 'rgba(0, 255, 168, 1)',
-                            fillColor: 'rgba(76, 211, 255, 1)'
+                            fillColor: 'rgba(0, 255, 168, 1)',
+                            // fillColor: 'rgba(76, 211, 255, 1)'
                         })
                     }
                 });
                 var marker = new AMap.Marker({
-                    extData:{
+                    extData: {
                         id: 2
                     },
                 });
@@ -258,6 +275,121 @@
                     zoom: 11
                 })
             },
+            //热力图
+            drwaHeatmap() {
+                /*热力图数据格式
+                * [{lng--经度  lat--纬度   count--总数},{},...]
+                * */
+                let heatmapData = [
+                    {
+                        "lng": 113.92706199999998,
+                        "lat": 22.542736,
+                        "count": 41334
+                    },
+                    {
+                        "lng":113.92706199999998,
+                        "lat": 22.542736,
+                        "count": 41334
+                    },
+                    {
+                        "lng":113.93299300000001,
+                        "lat":22.507888,
+                        "count":  7883
+                    },
+                    {
+                        "lng":113.99469899999997,
+                        "lat":22.523346,
+                        "count":5598
+                    },
+                    {
+                        "lng":113.99408900000003,
+                        "lat":22.52308,
+                        "count":16346
+                    },
+                    {
+                        "lng":113.87163800000008,
+                        "lat":22.474423,
+                        "count":11346
+                    },
+                    {
+                        "lng":98.277304,
+                        "lat":39.786529,
+                        "count":2686
+                    },
+                    {
+                        "lng":114.017382,
+                        "lat":22.604341,
+                        "count":2468
+                    },
+                    {
+                        "lng":113.99033800000007,
+                        "lat":22.62961,
+                        "count":11202
+                    },
+                    {
+                        "lng":113.99033800000007,
+                        "lat":22.72961,
+                        "count":6202
+                    },
+                    {
+                        "lng":113.91535099999999,
+                        "lat":22.483534,
+                        "count":1036
+                    },
+                    {
+                        "lng":113.90857800000003,
+                        "lat":22.478785,
+                        "count":11936
+                    },
+                    {
+                        "lng":113.92434300000002,
+                        "lat":22.529534,
+                        "count":21713
+                    },
+                    {
+                        "lng":113.95341200000007,
+                        "lat":22.556386,
+                        "count":702
+                    },
+                    {
+                        "lng":114.204648,
+                        "lat":22.601526,
+                        "count":702
+                    },
+                ];
+                // let styleClass = this.$route.path==='/atmosphere' ? 'atmosphere': this.$route.path==='/noise' ? 'noise': ''
+                let params = {
+                    styleClass:this.$route.path.replace('/','')
+                }
+                this.$get('/i605HeatMap',params).then(res => {
+                    // console.log('热力图',res.data)
+                    let heatmap;
+                    this.mapObj.plugin(["AMap.Heatmap"], () => {
+                        //初始化heatmap对象
+                        heatmap = new AMap.Heatmap(this.mapObj, {
+                            radius: 40, //给定半径
+                            opacity: [0, 0.7]
+                            /*,
+                            gradient:{
+                                0.5: 'blue',
+                                0.65: 'rgb(117,211,248)',
+                                0.7: 'rgb(0, 255, 0)',
+                                0.9: '#ffea00',
+                                1.0: 'red'
+                            }
+                             */
+                        });
+                        //设置数据集：该数据为北京部分“公园”数据
+                        heatmap.setDataSet({
+                            data: res.data,
+                            max: 10
+                            // max:100
+                        });
+                    });
+                })
+
+
+            },
             async changeShroudline() {
                 if (this.currentMapName !== this.secondsId) {
                     this.currentMapName = this.secondsId
@@ -265,22 +397,22 @@
                     return
                 }
                 if (this.secondsId === '流域叠加') {
-                     this.setShroudArea()
-                } else if (this.secondsId === '网管叠加') {
+                    this.setShroudArea()
+                } else if (this.secondsId === '管网叠加') {
                     this.setShroudline()
                 } else if (this.secondsId === '色阶统计图') {
-                    await  this.getData()
+                    await this.getData()
                     this.setdistrict()
                 } else if (this.secondsId === '噪声态势图') {
-                    await  this.getData()
+                    await this.getData()
                     this.contourLine()
                 }
             },
             async getData() {
                 let params = {
-                    mapClass:this.secondsId
+                    mapClass: this.secondsId
                 }
-                await this.$get('/i6035AirColorLevel',params).then( res =>  {
+                await this.$get('/i6035AirColorLevel', params).then(res => {
                     if (res.code == 0) {
                         this.mapData = res.data
                         console.log(33)
@@ -289,18 +421,19 @@
                     }
                 })
             },
+            //设置标记
             setMarkers(basicList) {
-                let self=this
+                let self = this
                 basicList.forEach(function (marker) {
                     let size
-                    if(marker.type===1){
-                        size=[self.vwToPx(2.34),self.vwToPx(2.81)]
-                    }else{
-                        size=[self.vwToPx(2.14),self.vwToPx(2.97)]
+                    if (marker.type === 1) {
+                        size = [self.vwToPx(2.34), self.vwToPx(2.81)]
+                    } else {
+                        size = [self.vwToPx(2.14), self.vwToPx(2.97)]
                     }
-                   let preIcon = new AMap.Icon({
+                    let preIcon = new AMap.Icon({
                         image: require(`../assets/image/map/${marker.status}.png`),
-                        size:new AMap.Size(size[0], size[1]), //图标大小
+                        size: new AMap.Size(size[0], size[1]), //图标大小
                         imageSize: new AMap.Size(size[0], size[1])
                     })
                     let mapMark = new AMap.Marker({
@@ -309,7 +442,8 @@
                         icon: preIcon,
                         // offset: new AMap.Pixel(-0, -37)
                     })
-                    mapMark.info=marker
+
+                    mapMark.info = marker
                     mapMark.on('click', self.showInfoM);
                     // new AMap.Marker({
                     //     map: self.mapObj,
@@ -320,31 +454,34 @@
                 });
 
             },
-            showInfoM(e){  //标记点击事件
-                let info=e.target.info;
+            showInfoM(e) {  //标记点击事件
+                let info = e.target.info;
                 let size;
-                if(info.type===1) return
-                if( this.lastClickedMarker){  //判断上一次点击过
-                    size=[this.vwToPx(2.14),this.vwToPx(2.97)]
+                //显示弹窗
+                this.$emit('showPop',info)
+
+                if (info.type === 1) return
+                if (this.lastClickedMarker) {  //判断上一次点击过
+                    size = [this.vwToPx(2.14), this.vwToPx(2.97)]
                     this.lastClickedMarker.setIcon(
                         new AMap.Icon({
                             image: require(`../assets/image/map/${this.lastClickedMarker.info.status}.png`),
-                            size:new AMap.Size(size[0], size[1]), //图标大小
+                            size: new AMap.Size(size[0], size[1]), //图标大小
                             imageSize: new AMap.Size(size[0], size[1])
                         })
                     )
                 }
 
-              size=[this.vwToPx(2.97),this.vwToPx(4.48)]
-               e.target.setIcon( //把iconSize置大
-                   new AMap.Icon({
-                       image: require(`../assets/image/map/${info.status}.png`),
-                       size:new AMap.Size(size[0], size[1]), //图标大小
-                       imageSize: new AMap.Size(size[0], size[1])
-                   })
-               )
+                size = [this.vwToPx(2.97), this.vwToPx(4.48)]
+                e.target.setIcon( //把iconSize置大
+                    new AMap.Icon({
+                        image: require(`../assets/image/map/${info.status}.png`),
+                        size: new AMap.Size(size[0], size[1]), //图标大小
+                        imageSize: new AMap.Size(size[0], size[1])
+                    })
+                )
                 /*弹窗位置*/
-                this.lastClickedMarker=e.target //赋值当前点击的marker
+                this.lastClickedMarker = e.target //赋值当前点击的marker
             }
         },
         watch: {
@@ -352,44 +489,47 @@
                 this.setSatelliteMap()
             },
             index: {
-                immediate:true,
+                immediate: true,
                 handler(val) {
                     // console.log(val,'val',this.secondsId)
-                    if (val==-1||val==0) {
+                    if (val == -1 || val == 0) {
                         this.setSatelliteMap()
                     } else {
                         this.trafficRoute()
                     }
-                    this.$nextTick(()=> {
+                    this.$nextTick(() => {
                         this.changeShroudline()
                     })
                 }
             },
-            secondsId(val,old) {
-                if (this.$route.path!=='/environment'){
+            secondsId(val, old) {
+                console.log(val, old)
+                if (this.$route.path !== '/environment') {
                     this.mapObj.clearMap();
                     this.changeShroudline()
                 } else {
-                    if (val.indexOf(this.currSecondsId)>-1) {
-                        if (this.currSecondsId==='流域叠加'){
+                    if (val.indexOf(this.currSecondsId) > -1) {
+                        if (this.currSecondsId === '流域叠加') {
                             this.setShroudArea()
                         }
-                        if (this.currSecondsId==='网管叠加') {
+                        if (this.currSecondsId === '管网叠加') {
                             this.setShroudline()
                         }
                     } else {
-                        if (this.currSecondsId==='流域叠加'){
+                        if (this.currSecondsId === '流域叠加') {
                             this.mapObj.remove(this.shroudArea)
                         }
-                        if (this.currSecondsId==='网管叠加') {
+                        if (this.currSecondsId === '管网叠加') {
                             this.mapObj.remove(this.shroudline)
                         }
                     }
-                    console.log(this.currSecondsId,val)
+                    console.log(this.currSecondsId, val)
                 }
             },
-            mapObj(){
+            mapObj() {
+                console.log('this.basicList',this.basicList)
                 this.setMarkers(this.basicList)
+                this.drwaHeatmap()
             },
         }
     }

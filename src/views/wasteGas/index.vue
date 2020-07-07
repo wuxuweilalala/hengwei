@@ -44,14 +44,29 @@
                         <div class="subTitle">
                             <div class="dotIcon"></div>不达标污染企业详情
                         </div>
-                        <ul>
-                            <li class="pictorialBarItem" v-for="(item,index) in pollutionPieObj.noReachList" :key="index">
-                                <div class="f_r_between">
-                                    <div>{{item.name}}</div>
-                                    <div>{{item.dBVal}}dB</div>
-                                </div>
-                                <PictorialBar :val="item.value|percentage" :grade="item.grade"/>
-                            </li>
+                        <ul class="swiperBox">
+                            <Swiper :options="swiperOption" v-if="pollutionPieObj.noReachList>4">
+                                <template  v-for="(item,index) in pollutionPieObj.noReachList">
+                                    <swiper-slide>
+                                        <li class="pictorialBarItem" :key="index">
+                                            <div class="f_r_between">
+                                                <div>{{item.name}}</div>
+                                                <div>{{item.dBVal}}dB</div>
+                                            </div>
+                                            <PictorialBar :val="item.value|percentage" :grade="item.grade"/>
+                                        </li>
+                                    </swiper-slide>
+                                </template>
+                            </Swiper>
+                            <template  v-else>
+                                    <li class="pictorialBarItem" v-for="(item,index) in pollutionPieObj.noReachList" :key="index">
+                                        <div class="f_r_between">
+                                            <div>{{item.name}}</div>
+                                            <div>{{item.dBVal}}dB</div>
+                                        </div>
+                                        <PictorialBar :val="item.value|percentage" :grade="item.grade"/>
+                                    </li>
+                            </template>
                         </ul>
                     </div>
                 </div>
@@ -59,13 +74,13 @@
             <div slot="pageCenter" class="pc-container">
                 <!--        地图-->
                 <div class="map">
-                    <toggleMap />
+                    <toggleMap @updateRate="updateRate"/>
 
                 </div>
                 <!--        污染源预警实时一览-->
                 <div class="warnReal bg_c lineshadow">
                     <chart-title :title="'污染源预警实时一览'" w="20%"/>
-                    <TableComponent :tableHeaderList="wr_headerList" :tableOption="wr_tableOption" :data="wr_spListList" />
+                    <TableComponent v-if="wr_spListList" :tableHeaderList="wr_headerList" :tableOption="wr_tableOption" :data="wr_spListList" :showNum="5"/>
                 </div>
             </div>
             <div slot="pageRight" class="pr-container">
@@ -146,11 +161,12 @@
                                     <div class="line">
                                         <div :style="{width:item.value}"></div>
                                     </div>
-                                    <div class="value">{{item.value}}</div>
+                                    <!--                                    <div class="value">{{item.value}}|{{item.value}}</div>-->
+                                    <div class="value">123t&nbsp;|&nbsp;<span class="capacity">123tt</span></div>
                                 </li>
                             </ul>
                             <ul class="rule flex">
-                                <li v-for="(item,i) in [1,1,1,1,1]"></li>
+                                <li v-for="(item,i) in [1,1,1,1]"></li>
                             </ul>
                         </div>
                     </div>
@@ -188,6 +204,8 @@
     import Popup from "../../components/Popup";
     import {getEnterpriseList} from "../../utils/api";
     import toggleMap from "../../components/toggleMap";
+    import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+    import {effluent_swiperOption} from '../../components/common/swiperOption'
 
     // @ is an alias to /src
     export default {
@@ -214,11 +232,12 @@
         },
         data() {
             return {
+                swiperOption:JSON.parse(JSON.stringify(effluent_swiperOption)),
                 showSelectList:false,
                 showUploadPop:false,
                 wr_headerList:wr_headerList,
                 wr_tableOption:wr_tableOption,
-                wr_spListList:[],
+                wr_spListList:null,
                 mt_pieList: [
                     {
                         label:'应急响应',
@@ -287,21 +306,23 @@
                 pollutionWarnObj: {},
                 abatementObj:{},
                 tasksumaryObj:{},
-                inspectsumary:null
+                inspectsumary:null,
+                enterprise:null,
+                factor:null,
+                rateCode:''
             }
         },
         created() {
             this.getData()
         },
         methods: {
-            changeSelectItemed(val) {
-                // console.log('11111',val.label)
-                this.getAbatement(val.label)
+            updateRate(code) {
+                this.rateCode=code
+                this.getAbatement()
             },
-            // 搜索企业
-            search(item) {
-                // console.log(item.target.value)
-                this.getAbatement(null,item.target.value)
+            changeSelectItemed(val) {
+                this.factor = val.value
+                this.getAbatement()
             },
             toTable() {
                     this.$router.push({
@@ -315,8 +336,8 @@
                 return val ? String(val).replace('%',''): '0'
             },
             search(item) {
-                // console.log(item.target.value)
-                this.getAbatement(null,item.target.value)
+                this.enterprise = item.target.value
+                this.getAbatement()
             },
             getData() {
                 this.getInspectsumary()
@@ -345,14 +366,16 @@
                     }
                 })
             },
-            getAbatement(factor,enterprise) {
-                // console.log('factor,enterprise',factor,enterprise)
+            getAbatement() {
                 let params = {}
-                if (factor) {
-                    params.factor = factor
+                if (this.factor) {
+                    params.factor = this.factor
                 }
-                if (enterprise) {
-                    params.enterprise = enterprise
+                if (this.enterprise) {
+                    params.enterprise = this.enterprise
+                }
+                if(this.rateCode) {
+                    params.code = this.rateCode
                 }
                 this.$get('/i305polluteAbatement',params).then(res => {
                     if (res.code == 0) {
@@ -475,7 +498,7 @@
     }
     .pictorialBarItem{
         margin-top: 0.48vh;
-        color:#fff
+        color:#fff;
     }
     .pictorialBar,.taskStylePie,.situation{
         position: relative;
@@ -491,6 +514,10 @@
                 margin-top: 0.7vh;
             }
         }
+    }
+
+    .pictorialBar .swiperBox{
+        height: 22vh;
     }
     .pieList{
         .colorTips{
@@ -548,7 +575,9 @@
                     text-align: center;
                 }
                 .line{
-                    width: 11.3vw;
+                    width: 10.3vw;
+                    margin-left: 0.7vw;
+                    /*width: 10vw;*/
                     div{
                         width: 100%;
                         height: 0.37vh;
@@ -559,20 +588,24 @@
                 }
                 .value{
                     position: relative;
-                    width: 1.51vw;
+                    /*width: 1.51vw;*/
+                    width: 6.51vw;
                     height: 1.39vh;
                     line-height: 1.39vh;
-                    margin-left: 1vw;
-                    background-color: rgba(255, 255, 255, 0.1);
-                    &:before{
-                        content: '';
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 1px;
-                        height: 100%;
-                        background-color: #fff;
+                    .capacity{
+                        color: rgba(255,255,255,0.5 );
                     }
+                    /*margin-left: 1vw;*/
+                    /*background-color: rgba(255, 255, 255, 0.1);*/
+                    /*&:before{*/
+                    /*    content: '';*/
+                    /*    position: absolute;*/
+                    /*    left: 0;*/
+                    /*    top: 0;*/
+                    /*    width: 1px;*/
+                    /*    height: 100%;*/
+                    /*    background-color: #fff;*/
+                    /*}*/
                 }
             }
             .rule{
@@ -748,5 +781,17 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%,-50%);
+    }
+</style>
+<style scoped lang="scss">
+    .swiper-container{
+        height: 100%;
+        .swiper-slide{
+            display: flex;
+            align-items: center;
+            &:nth-child(odd) {
+                background: rgba(255, 255, 255, 0.05);
+            }
+        }
     }
 </style>

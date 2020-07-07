@@ -1000,14 +1000,16 @@ export let popTable = [
     {
         name: "预警状态",
         width: "6vw",
-        isGrade:true,
-        textArr:['一般污染','中度污染','重度污染']
+        isWarnSyle:true,
+        isWarnSyleText:true,
+        // isGrade:true,
+        // textArr:['一般污染','中度污染','重度污染']
     }
 ]
 
 export let poptableOption= {
     tableStyle: {
-        height: "30vh",
+        height: "25vh",
         width: "100%",
         margin: "0 auto"
     }, // 表格样式
@@ -1016,7 +1018,7 @@ export let poptableOption= {
     },
     tableTbodyStyle: {
         width: "100%",
-        height: "30vh"
+        height: "25vh"
     },
     tableTrstyle: {},
     isTableHeaderLine: true, // 表头分割线是否使用

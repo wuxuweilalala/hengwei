@@ -1,5 +1,5 @@
 <template>
-  <div class="atmosphere">
+  <div class="atmosphere" @click.stop="showCalendaFn(false)">
     <page-layout>
       <div slot="pageLeft" class="pl-container">
 <!--        空气质量监测情况-->
@@ -42,19 +42,27 @@
 <!--                    因子选择<i class="pullIcon ICON"></i>-->
                 </div>
             </div>
-            <TableComponent :tableHeaderList="aq_headerList" :tableOption="aq_tableOption" :data="aq_spListList" />
+            <TableComponent v-if="aq_spListList" :tableHeaderList="aq_headerList" :tableOption="aq_tableOption" :data="aq_spListList"  :showNum="9"/>
         </div>
 <!--         区域预警信息-->
         <div class="areaWarnInfo bg_c">
             <chart-title :title="'区域预警信息'" class="p_0.52" w="30%"/>
-            <TableComponent :tableHeaderList="aw_headerList" :tableOption="aw_tableOption" :data="aw_spListList" />
+            <TableComponent v-if="aw_spListList" :tableHeaderList="aw_headerList" :tableOption="aw_tableOption" :data="aw_spListList"  :showNum="6"/>
         </div>
       </div>
       <div slot="pageCenter" class="pc-container">
 <!--        地图-->
         <div class="map">
             <ToggleMap :id="'atmosphere'" />
-        <WarnTips :options="forefcastObj" />
+            <div class="mapWarnTips">
+                <Swiper :options="swiperOption"  v-if="[1,1,1,1,1,1]">
+                    <template v-for="(item, index) in ['1','1','1','1','1','1']">
+                        <swiper-slide :key="index">
+                            <WarnTips :msgForecast="item" />
+                        </swiper-slide>
+                    </template>
+                </Swiper>
+            </div>
         </div>
 <!--        街道、社区、工地空气质量预报-->
         <div class="airForecast bg_c">
@@ -85,14 +93,29 @@
                         v-model="currMonth"
                         type="month"
                         format="yyyy-MM"
+                        clear-icon="''"
                         placeholder="选择日期"
                         @change="changeMonth"
+                        @click.native.stop="showCalendaFn(true)"
                         >
                 </el-date-picker>
             </div>
+<!--            日历选择-->
+            <div class="selectMonth" @click.stop="showCalendaFn(true)" v-show="showCalenda">
+                <div class="currYear f_r_between f_c_center">
+                    <i class="calendar_l ICON pointer" @click="currYear--"></i>
+                    {{currYear}}年
+                    <i class="calendar_r ICON pointer" @click="currYear++"></i>
+                </div>
+                <div class="monthList">
+                    <ul class="monthList-ul">
+                        <li :class="['monthList-li','pointer']" :style="{color:month==index?'rgba(0, 154, 255, 1':''}" @click="setCalendar(index+1)" v-for="(item,index) in monthList">{{item}}</li>
+                    </ul>
+                </div>
+            </div>
             <div class="colorTips">
                 <ul class="flex">
-                    <li class="colorItem f_c_center" v-for="(item,index) in colorTips" :key="index">
+                    <li class="colorItem f_c_center " v-for="(item,index) in colorTips" :key="index">
                         <div class="colorBox" :style="`background-color: ${item.color}`"></div>
                         <div class="text">{{item.text}}</div>
                     </li>
@@ -131,6 +154,7 @@
 
 <script>
 // @ is an alias to /src
+const MONTHLIST = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
 import ChartTitle from "../../components/ChartTitle";
 import pageLayout from "../../components/pageLayout";
 import TableComponent from "../../components/common/TableComponent";
@@ -143,6 +167,9 @@ import {aq_headerList,aw_headerList,aq_tableOption,aw_tableOption,aqiList} from 
 import DropDownComponent from "../../components/common/DropDownComponent";
 import SelectComponent from '../../components/common/SelectComponent'
 import WarnTips from '../../components/warnTips'
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+import {effluent_swiperOption, forecast_swiperOption} from '../../components/common/swiperOption'
+
 export default {
   name: "Atmosphere",
   components: {
@@ -156,12 +183,19 @@ export default {
       basicLine,
       DropDownComponent,
       SelectComponent,
-      WarnTips
+      WarnTips,
+      Swiper,
+      SwiperSlide
   },
     data() {
       return {
-          aw_spListList:[],
-          aq_spListList:[],
+          swiperOption:JSON.parse(JSON.stringify(forecast_swiperOption)),
+          monthList:MONTHLIST,
+          currYear:2020,
+          month:'',
+          showCalenda:false,
+          aw_spListList:null,
+          aq_spListList:null,
           aq_tableOption:aq_tableOption,
           aq_headerList:aq_headerList,
           aw_tableOption:aw_tableOption,
@@ -243,7 +277,6 @@ export default {
         chartlineYData: {
             get() {
                 let obj = this.getMatchArr(this.airReach.lineChart, this.airReach.currentSelected.label)
-                console.log(123333)
                 return obj ? obj.yData : []
             },
             set(val) {}
@@ -256,12 +289,36 @@ export default {
                 return str
             },
             set(val) {}
-        }
+        },
     },
     created() {
+      this.currYear= Number(new Date().getFullYear())
       this.getData()
     },
+    watch: {
+        currYear: {
+            immediate:true,
+            handler(val) {
+                this.matchMonth(val)
+            }
+        }
+    },
     methods: {
+        showCalendaFn(bol) {
+          this.showCalenda = bol
+        },
+        setCalendar(month) {
+            this.currMonth=this.currYear + '-' + month
+            this.month = month-1
+        },
+        matchMonth(val) {
+            let date = new Date()
+            if (date.getFullYear()===val) {
+                this.setCalendar(date.getMonth()+1)
+            } else {
+                this.month = null
+            }
+        },
         changecity(val) {
             console.log(val.label)
             let label = val.label
@@ -282,12 +339,9 @@ export default {
         changeSelectItemed(val) {
             this.airReach.currentSelected.label=val.label
             this.showBasicLine = false
-            // this.airReach.currentSelected.label='氨氮2'
-
             this.$nextTick( ()=> {
                 this.showBasicLine = true
             })
-            console.log(11111,val)
         },
         getData() {
             this.getWatersumaryall()
@@ -412,8 +466,11 @@ export default {
   .map{
     width: 100%;
     height: 58vh;
-      position: relative;
-
+    position: relative;
+    .mapWarnTips{
+        height: 2.96vh;
+        margin-top: 2vh;
+    }
   }
   .airForecast{
     width: 100%;
@@ -617,9 +674,61 @@ export default {
         }
     }
 
+    .selectMonth{
+        position: absolute;
+        left: 2vw;
+        top: 5.5vh;
+        width: 15.36vw;
+        height: 19.81vh;
+        padding: 0 1.04vw;
+        box-sizing: border-box;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-image: url("../../assets/image/calendar_box@2x.png");
+        z-index: 99;
+        .currYear{
+            font-size: 0.73vw;
+            line-height: 4.38vh;
+            height: 4.38vh;
+            color: #fff;
+        }
+        .monthList{
+            height: 16.43vh;
+            .monthList-ul{
+                display: flex;
+                flex-flow: wrap;
+                .monthList-li{
+                    width: 3vw;
+                    font-size: 0.63vw;
+                    line-height: 4.61vh;
+                    margin-left: 0.4vw;
+                    color: #fff;
+                    font-size: 0.63vw;
+                    line-height: 4.61vh;
+                    &:nth-child(4n+1){
+                        margin-left: 0vw;
+                    }
+                }
+            }
+        }
+    }
+    .currMonth{
+        color:rgba(0, 154, 255, 1);
+    }
+
 
 
     /*icon*/
+  .calendar_r{
+      width: 0.73vw;
+      height: 0.73vw;
+      background-image: url("../../assets/image/calendar_r@2x.png");
+  }
+  .calendar_l{
+      width: 0.73vw;
+      height: 0.73vw;
+      background-image: url("../../assets/image/calendar_l@2x.png");
+  }
     .pullIcon{
         width: 0.8vw;
         height: 0.8vh;
@@ -697,6 +806,16 @@ export default {
         }
         /deep/ .el-input__icon{
             line-height: 1.85vh;
+        }
+    }
+</style>
+
+<style scoped lang="scss">
+    .swiper-container{
+        height: 100%;
+        .swiper-slide{
+            display: flex;
+            align-items: center;
         }
     }
 </style>

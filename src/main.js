@@ -6,6 +6,11 @@ import {Pagination,DatePicker} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import '../src/assets/css/_reset.scss'
 import '../src/assets/css/base.scss'
+
+
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/css/swiper.css'
+
 import {get, post, patch, put, del } from './utils/request'
 
 Vue.config.productionTip = false;
@@ -18,7 +23,7 @@ Vue.prototype.$del = del
 import VueAxios from 'vue-axios'
 
 
-Vue.use(VueAxios, axios).use(Pagination).use(DatePicker)
+Vue.use(VueAxios, axios).use(Pagination).use(DatePicker).use(VueAwesomeSwiper)
 new Vue({
     router,
     store,

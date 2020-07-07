@@ -22,8 +22,8 @@
                 background
                 layout="prev, pager, next"
                 :total="total"
-                :page-size="pageSize"
-                :current-page="pageNum"
+                :page-size="pageTotal"
+                :current-page="pageSize"
                 @current-change="pageTurning"
         >
         </el-pagination>
@@ -48,7 +48,6 @@
         },
         created() {
             this.getData()
-            console.log(this.$route.query.style)
         },
         watch: {
             currIndex() {
@@ -57,40 +56,44 @@
         },
         methods: {
             filtrateClass(val) {
-                console.log('aaaaaaaaa',val)
                 this.isFirstNO = !this.isFirstNO
                 if (this.isFirstNO) return
-                this.pageNum = 1
+                this.pageSize = 1
                 this.getData(val)
             },
             setTableList() {
-                this.tableList = this.currIndex === 0 ? this.emergencyTableData : this.operationTableData
+                if (this.currIndex === 0) {
+                    this.total = this.tableObj.emergencyTotal
+                    this.tableList = this.emergencyTableData
+
+                }else if (this.currIndex === 1){
+                    this.total = this.tableObj.operationTotal
+                    this.tableList = this.operationTableData
+                }
             },
             pageTurning(val) {
-                this.pageNum = val
+                this.pageSize = val
                 this.getData()
             },
           getData(val) {
                 let params ={
-                    pageNum:this.pageNum,
+                    pageSize:this.pageSize,
+                    pageTotal:this.pageTotal,
                     popName:this.$route.query.style
                 }
               if (val!=='任务类型') {
                   let str = this.currIndex==0?'应急响应':'日常运维'
-                  params.taskClass=  str + '-' + val
+                    params.taskClass=  str + '-' + val
 
               }
               this.$get('/i309PopupTable',params).then(res => {
                   if (res.code == 0) {
                       this.tableObj = res.data
-                      this.total = res.data.total
-                      this.pageNum = res.data.pageNum
-                      this.pageSize = res.data.pageSize
+                      this.total = res.data.emergencyTotal
                       this.emergencyTableData = this.dataDispose(res.data.emergencyTable,1)
                       this.operationTableData = this.dataDispose(res.data.operationTable,2)
                       this.setTableList()
                       this.taskClass = res.data.taskClass
-                      // console.log('this.taskClass ',this.taskClass)
                   } else {
                       console.log(res.err_msg)
                   }
@@ -100,10 +103,10 @@
               let newarr = []
               arr.forEach((item,i) => {
                   if (index==1){
-                      let subarr = [i+1,item.taskClass,item.name,item.stance,item.startTime,item.endTime,item.executor,item.style,item.taskGrade]
+                      let subarr = [i+1,item.taskClass,item.name,item.stance,item.startTime,item.endTime,item.executor,item.taskStyle,item.taskGrade]
                       newarr.push(subarr)
                   }else if(index==2) {
-                      let subarr = [i+1,item.taskClass,item.name,item.stance,item.startTime,item.endTime,item.executor,item.style,item.taskGrade,item.factor,item.warnStyle]
+                      let subarr = [i+1,item.taskClass,item.name,item.stance,item.startTime,item.endTime,item.executor,item.taskStyle,item.taskGrade,item.factor,item.warnStyle]
                       newarr.push(subarr)
                   }
               })
@@ -113,8 +116,8 @@
         data() {
             return {
                 isFirstNO:false,
-                pageSize: 20,
-                pageNum:1,
+                pageTotal: 20,
+                pageSize:1,
                 total:1,
                 tableList:[],
                 taskClassed:'',//筛选类型

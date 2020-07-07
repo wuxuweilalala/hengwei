@@ -1,6 +1,6 @@
 let option = {
     tableStyle: {
-        height: "16.1vh",
+        // height: "16.1vh",
         width: "100%",
         margin: "0 auto"
     }, // 表格样式
@@ -16,7 +16,7 @@ export let tableOption = option
 
 let option_1 = {
     tableStyle: {
-        height: "23.1vh",
+        // height: "23.1vh",
         width: "100%",
         margin: "0 auto"
     }, // 表格样式
@@ -32,7 +32,7 @@ export let tableOption_1 = option_1
 
 let option_2 = {
     tableStyle: {
-        height: "25.1vh",
+        // height: "25.1vh",
         width: "100%",
         margin: "0 auto"
     }, // 表格样式
@@ -60,7 +60,7 @@ export let wi_headerList = [
         name: "监控点名称",
         width: "9vw",
         style:{
-            width:'10vw'
+            width:'9vw'
         }
     },
     {
@@ -68,7 +68,7 @@ export let wi_headerList = [
         width: "6vw",
         style:{
             marginLeft: '1vw',
-            width: "5vw",
+            width: "4vw",
         }
     },
     {
@@ -76,22 +76,26 @@ export let wi_headerList = [
         width: "6vw",
         style:{
             marginLeft: '1vw',
-            width:'5vw'
+            width:'4.5vw'
         }
     },
     {
         name: "预警状态",
         width: "7vw",
-        isNoiseGrade:true,
-        textArr:['白色污染','黄色污染','红色污染'],
+        isWarnSyle:true,
+        isWarnSyleText:true,
         style:{
-            width:'6vw',
+            width:'5.5vw',
             // paddingLeft:'1vw'
         }
     },
     {
         name: "可疑开始时间",
         width: "7vw",
+        style:{
+            width:'6.5vw',
+            // paddingLeft:'1vw'
+        }
     },
     {
         name: "可疑结束时间",
@@ -112,18 +116,17 @@ export let fi_headerList = [
         name: "监控点名称",
         width: "11vw",
         style:{
-            width:'12vw'
+            width:'11.5vw'
         }
     },
     {
         name: "预警状态",
         width: "5vw",
-        isNoiseGrade:true,
-        textArr:['白色污染','黄色污染','红色污染'],
-
+        isWarnSyle:true,
+        isWarnSyleText:true,
         style:{
             marginLeft:'1vw',
-            width:'5.5vw'
+            width:'5vw'
         }
     },
     {
@@ -137,7 +140,7 @@ export let fi_headerList = [
         name: "有效结束时间",
         width: "8vw",
         style:{
-            width:'8vw',
+            width:'7vw',
         }
     },
     {
@@ -145,6 +148,7 @@ export let fi_headerList = [
         width: "6vw",
         style:{
             marginLeft:'1vw',
+            width: "5vw",
         }
     },
     {
@@ -153,6 +157,7 @@ export let fi_headerList = [
         isDispose:true,
         style:{
             marginLeft:'1vw',
+            // width: "4vw",
         }
     },
     {
@@ -166,25 +171,29 @@ export let nr_headerList = [
         name: "序号",
         width: "3vw",
         style:{
-            marginLeft:'0.5vw',
-            width:'2vw'
+            width:'1vw'
         }
     },
     {
         name: "监控点名称",
         width: "6vw",
+        style:{
+            width:'5vw'
+        }
     },
     {
         name: "噪声",
-        width: "4vw",
+        width: "3vw",
         style:{
-            marginLeft:'0.5vw',
-            // width:'1.5vw'
+            width:'2vw'
         }
     },
     {
         name: "湿度",
         width: "4vw",
+        style:{
+            width:'2vw'
+        }
     },
     {
         name: "采集时间",
@@ -195,23 +204,31 @@ export let nr_headerList = [
 export let nc_headerList = [
     {
         name: "序号",
-        width: "3vw",
+        width: "2vw",
         style:{
-            marginLeft:'0.5vw',
-            width:'2.5vw'
+            width:'1vw'
         }
     },
     {
         name: "功能区类别",
-        width: "6vw",
+        width: "5vw",
+        style:{
+            width:'4vw'
+        }
     },
     {
         name: "标准",
-        width: "4vw",
+        width: "3vw",
+        style:{
+            width:'3vw'
+        }
     },
     {
         name: "实际监测",
         width: "4vw",
+        style:{
+            width:'3vw'
+        }
     },
     {
         name: "是否达标",

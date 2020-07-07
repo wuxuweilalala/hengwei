@@ -8,6 +8,19 @@
           <TerritoryClass  v-if="airQualityObj" :airQualityObj="airQualityObj" />
         </div>
       </div>
+      <div class="summarizeClass lineshadow">
+        <div class="waterNavTitle">达标企业占比</div>
+<!--        <chart-title :title="'达标企业占比'" w="50%"/>-->
+<!--        <ul class="f_wrap">-->
+<!--          <li class="classItem flex" v-for="(item,index) in summarizeClass" :key="index">-->
+<!--            <div class="icon_box f_center">-->
+<!--              <i :class="['ICON summarizeIcon',item.icon]"></i>-->
+<!--            </div>-->
+<!--            <div class="text">123个</div>-->
+<!--          </li>-->
+<!--        </ul>-->
+        <MonitorCard :styleObj="{marginTop:'2vh'}" :classObj="monitorObj" :subclassObj="monitorObj" :isWork="false"/>
+      </div>
       <!-- 排污总量监管 -->
       <div class="waterNavLeftItem2">
         <div class="waterNavLeftItem2Title">排污总量监管</div>
@@ -31,23 +44,50 @@
             </div>
           </div>
           <div class="pollutantEnterprisesList" v-if="charOptions5Obj">
-            <div
-              v-for="(item, index) in charOptions5Obj[0].name.length"
-              :key="index"
-              class="pollutantEnterprisesListItem"
-            >
-              <div class="pollutantEnterprisesListItemTop">
-                <div>{{charOptions5Obj[0].name[index]}}</div>
-                <div>{{charOptions5Obj[0].value[index]*100}}%</div>
-              </div>
-              <!-- <div class="pollutantEnterprisesListContent"></div> -->
-              <!-- 柱形图 -->
-              <vChart
-                :options="charOPtions8[index]"
-                autoresize
-                class="pollutantEnterprisesListContent"
-              ></vChart>
-            </div>
+            <Swiper :options="swiperOption"  v-if="charOptions5Obj[0].name.length>4">
+              <template v-for="(item, index) in charOptions5Obj[0].name.length">
+                <swiper-slide>
+                  <div
+
+                          :key="index"
+                          class="pollutantEnterprisesListItem"
+                  >
+                    <div class="pollutantEnterprisesListItemTop">
+                      <div>{{charOptions5Obj[0].name[index]}}</div>
+                      <div>{{Math.floor(charOptions5Obj[0].value[index]*100)}}%&nbsp;|
+                        &nbsp;{{Math.floor(charOptions5Obj[0].value[index]*100)}}%</div>
+                    </div>
+                    <!-- <div class="pollutantEnterprisesListContent"></div> -->
+                    <!-- 柱形图 -->
+                    <vChart
+                            :options="charOPtions8[index]"
+                            autoresize
+                            class="pollutantEnterprisesListContent"
+                    ></vChart>
+                  </div>
+                </swiper-slide>
+              </template>
+            </Swiper>
+            <template v-else>
+                <div
+                        v-for="(item, index) in charOptions5Obj[0].name.length"
+                        :key="index"
+                        class="pollutantEnterprisesListItem"
+                >
+                  <div class="pollutantEnterprisesListItemTop">
+                    <div>{{charOptions5Obj[0].name[index]}}</div>
+                    <div>{{Math.floor(charOptions5Obj[0].value[index]*100)}}%&nbsp;|
+                      &nbsp;{{Math.floor(charOptions5Obj[0].value[index]*100)}}%</div>
+                  </div>
+                  <!-- <div class="pollutantEnterprisesListContent"></div> -->
+                  <!-- 柱形图 -->
+                  <vChart
+                          :options="charOPtions8[index]"
+                          autoresize
+                          class="pollutantEnterprisesListContent"
+                  ></vChart>
+                </div>
+            </template>
           </div>
         </div>
       </div>
@@ -55,12 +95,12 @@
     <!-- 污染源预警实时一览" -->
     <div class="waterNavCenter">
       <div class="map">
-    <toggleMap />
+        <toggleMap @updateRate="updateRate"/>
       </div>
       <div class="proportionList">
         <div class="proportionListTitle">污染源预警实时一览</div>
         <!-- table组件 strat -->
-        <TableComponent :tableHeaderList="tableHeaderList" :tableOption="tableOption" :data="data" />
+        <TableComponent v-if="tableList" :tableHeaderList="tableHeaderList" :tableOption="tableOption" :data="tableList" :showNum="5"/>
         <!-- table组件 end -->
       </div>
     </div>
@@ -159,15 +199,18 @@
       </div>
     </div>
     <Popup :isShow.sync="showWarnPop" w="28.85vw" h="33.61vh" title="水系统平衡分析不同等级预警占比">
-      <div class="warn-popContainer">
-        <TableComponent :tableHeaderList="popTable" :tableOption="poptableOption" :data="popData" />
-      </div>
+      <template v-if="showWarnPop">
+        <div class="warn-popContainer">
+          <TableComponent v-if="popData" :tableHeaderList="popTable" :tableOption="poptableOption" :data="popData" :showNum="9"/>
+        </div>
+      </template>
     </Popup>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import ChartTitle from "../../components/ChartTitle";
 import basicPie from "../../components/basicPie"
 import TableComponent from "../../components/common/TableComponent";
 import SelectComponent from "../../components/common/SelectComponent";
@@ -177,8 +220,9 @@ import PictorialBarII from "../../components/PictorialBarII";
 import Popup from "../../components/Popup";
 import TerritoryClass from "../../components/TerritoryClass";
 import basicPieBar from "../../components/basicPieBar";
-
-
+import MonitorCard from '../../components/MonitorCard'
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+import {effluent_swiperOption} from '../../components/common/swiperOption'
 import {
   getRegion,
   getPollution,
@@ -214,6 +258,7 @@ export default {
   name: "Home",
   data() {
     return {
+      swiperOption:JSON.parse(JSON.stringify(effluent_swiperOption)),
       airQualityObj: null,
       showWarnPop:false,
       showFlowPop:false,
@@ -240,13 +285,20 @@ export default {
         isTableHeaderLine: true, // 表头分割线是否使用
         tableHeaderLine: `<div class="hr"></div>` // dom字符串
       },
+      summarizeClass:[
+        {icon:'guo_icon'},
+        {icon:'sheng_icon'},
+        {icon:'shi_icon'},
+        {icon:'qu_icon'},
+        {icon:'chang_icon'},
+        {icon:'qi_icon'},
+      ],
       // 表头单元格
       tableHeaderList: [
         {
           name: "序号",
           width: "3vw",
           style: {
-            marginLeft:'0.5vw',
             width: "1vw",
           }
         },
@@ -254,16 +306,14 @@ export default {
           name: "公司名称",
           width: "10.88vw",
           style: {
-            marginLeft:'0.5vw',
-            width: "9vw",
+            width: "8.5vw",
           }
         },
         {
           name: "站位名称",
           width: "10vw",
           style: {
-            marginLeft:'0.5vw',
-            width: "11vw",
+            width: "8.5vw",
           }
         },
         {
@@ -279,8 +329,7 @@ export default {
           width: "7.08vw",
           // isWarnSyle:true,
           style: {
-            marginLeft:'0.5vw',
-            width: "6vw",
+            width: "4vw",
           }
         },
         {
@@ -291,7 +340,7 @@ export default {
           isWarnSyle:true,
           style: {
             marginLeft:'1vw',
-            width: "5vw",
+            width: "4.5vw",
           }
         },
         {
@@ -306,19 +355,23 @@ export default {
         {
           name: "可疑开始时间",
           width: "8.03vw",
-          height: ""
+          style: {
+            width: "7vw",
+          }
         },
         {
           name: "可疑结束时间",
           width: "10.18vw",
-          height: ""
+          style: {
+            width: "7vw",
+          }
         }
       ],
       ...DropDownConfig(),
       // Select配置项
       ...SelectConfig(),
       enterpriseName: "", // 企业名称
-      data: [],
+      tableList: null,
       charOptions1: {},
       charOptions1List: [],
       charOptions2: {},
@@ -345,22 +398,7 @@ export default {
         left: '', // 定位left
         top: '' // 定位top
       },
-      monitorObj: {
-        selectList:[{
-          label:'zyw',
-          value:123
-        },{
-          label:'zyw',
-          value:123
-        },{
-          label:'zyw',
-          value:123
-        }],
-        currentSelected:{
-          label: 'zyw',
-          value:123
-        }
-      },
+      monitorObj: {},
       selectOption: {
         placeholder:'zyw'
       },
@@ -377,7 +415,10 @@ export default {
       selectItemed:null,
       abatementObj:{},
       showSelectList:false,
-      updateAbatement:true
+      updateAbatement:true,
+      enterprise:null,
+      factor:null,
+      rateCode:''
     };
   },
   created() {
@@ -415,7 +456,22 @@ export default {
     pieValue:'getPieValue'
 }),
   },
-  components: { Popup,PictorialBarII,TerritoryClass,basicPieBar,TableComponent, vChart, SelectComponent, DropDownComponent,toggleMap,basicPie },
+  components: {
+    ChartTitle,
+    Popup,
+    PictorialBarII,
+    TerritoryClass,
+    basicPieBar,
+    TableComponent,
+    vChart,
+    SelectComponent,
+    DropDownComponent,
+    toggleMap,
+    basicPie,
+    MonitorCard,
+    Swiper,
+    SwiperSlide
+  },
   methods: {
     getNoiseOverview() {
       this.$get('/i101inspectsumary').then(res => {
@@ -428,9 +484,14 @@ export default {
         this.showAQI=true
       })
     },
+    updateRate(code) {
+      this.rateCode=code
+      this.getAbatement()
+    },
     changeSelectComponent(val) {
       // console.log('11111',val.label)
-      this.getAbatement(val.label)
+      this.factor = val.label
+      this.getAbatement()
     },
     changeSelectItemed(val) {
       // console.log(val)
@@ -448,7 +509,6 @@ export default {
     },
     getPopData() {
       this.$get('/i308PopupWarnTable').then(res => {
-
         if (res.code == 0) {
           let newArr = []
           res.data.forEach((item,i) => {
@@ -462,17 +522,19 @@ export default {
         }
       })
     },
-    getAbatement(factor,enterprise) {
-
+    getAbatement() {
       let params = {}
-      if (factor) {
-        params.factor = factor
+      if (this.factor) {
+        params.factor = this.factor
       }
-      if (enterprise) {
-        params.enterprise = enterprise
+      if (this.enterprise) {
+        params.enterprise = this.enterprise
+      }
+      if(this.rateCode) {
+        params.code = this.rateCode
       }
       this.$get('/i105pollreducerate',params).then(res => {
-        // console.log(11111,res.data)
+        console.log(11111,res.data)
         this.updateAbatement=false
         if (res.code == 0) {
           this.abatementObj=res.data
@@ -543,15 +605,16 @@ export default {
             })
           );
         });
+        console.log(this.charOptions5Obj[0])
       });
 
       // 污染源预警实时一览
       getRealTimePollutionSource().then(data => {
-        this.data = [];
-        console.log('data',data);
-        data.forEach(item => {
-          this.data.push([
-            this.data.length + 1,
+        this.tableList = [];
+        // console.log('data',data);
+        data.dataList.forEach((item,i) => {
+          this.tableList.push([
+            i + 1,
             item.companyName,
             item.siteName,
             item.paramName,
@@ -576,12 +639,8 @@ export default {
     },
     // 搜索企业
     search(item) {
-      // console.log(item.target.value)
-      this.getAbatement(null,item.target.value)
-      // console.log(this.enterpriseName);
-      // getEnterpriseList(this.enterpriseName).then(data => {
-      //   console.log(data);
-      // });
+      this.enterprise = item.target.value
+      this.getAbatement()
     }
   },
   filters:{
@@ -619,8 +678,10 @@ export default {
     .waterNavLeftItem1 {
       width: 18.75vw;
       height: 22.96vh;
-      background: url("../../assets/image/effluent/监测区域情况概述内容框@3x.png");
-      background: url("../../assets/image/effluent/削减率内容框@3x.png");
+      background-color: rgba(4, 11, 39, 0.6);
+
+      /*background: url("../../assets/image/effluent/监测区域情况概述内容框@3x.png");*/
+      /*background: url("../../assets/image/effluent/削减率内容框@3x.png");*/
       background-size: 100% 100%;
       .waterNavLeftItem1Title {
         width: 18.75vw;
@@ -767,9 +828,11 @@ export default {
     // 监测区域内污染情况一览
     .waterNavLeftItem2 {
       width: 18.75vw;
-      height: 65.46vh;
-      background: url("../../assets/image/effluent/监测区域内污染情况一览内容框@3x.png");
-      background-size: 100% 100%;
+      height: 45.74vh;
+      background-color: rgba(4, 11, 39, 0.6);
+
+      /*background: url("../../assets/image/effluent/监测区域内污染情况一览内容框@3x.png");*/
+      /*background-size: 100% 100%;*/
       margin-top: 0.74vh;
       .waterNavLeftItem2Title {
         width: 18.75vw;
@@ -902,7 +965,7 @@ export default {
         }
         .pollutantEnterprisesList {
           width: 16.67vw;
-          height: 38.33vh;
+          height: 20.33vh;
           margin: 0 auto;
           .pollutantEnterprisesListItem {
             width: 16.67vw;
@@ -1023,7 +1086,9 @@ export default {
     .waterNavRightItem1 {
       width: 18.75vw;
       height: 23.98vh;
-      background: url("../../assets/image/effluent/削减率内容框@3x.png");
+      background-color: rgba(4, 11, 39, 0.6);
+
+      /*background: url("../../assets/image/effluent/削减率内容框@3x.png");*/
       background-size: 100% 100%;
       .waterNavRightItem1Title {
         width: 18.75vw;
@@ -1183,8 +1248,10 @@ export default {
       width: 18.75vw;
       height: 24.44vh;
       margin-top: 0.65vh;
+      background-color: rgba(4, 11, 39, 0.6);
+
       // background: url("../../assets/image/effluent/任务实时更新状态表@3x.png");
-      background: url("../../assets/image/effluent/削减率内容框@3x.png");
+      /*background: url("../../assets/image/effluent/削减率内容框@3x.png");*/
       background-size: 100% 100%;
       .waterNavRightItem2Title {
         width: 18.75vw;
@@ -1294,8 +1361,10 @@ export default {
       width: 18.75vw;
       height: 39.26vh;
       margin-top: 0.74vh;
-      background: url('../../assets/image/effluent/监控点上传率概况内容框@3x.png');
-      background-size: 100% 100%;
+      background-color: rgba(4, 11, 39, 0.6);
+
+      /*background: url('../../assets/image/effluent/监控点上传率概况内容框@3x.png');*/
+      /*background-size: 100% 100%;*/
       .waterNavRightItem3Title {
         width: 18.75vw;
         height: 3.24vh;
@@ -1550,4 +1619,84 @@ export default {
   top: 50%;
   transform: translate(-50%,-50%);
 }
+  .summarizeClass{
+    position: relative;
+    width: 18.75vw;
+    height: 19.17vh;
+    padding: 0 1vw;
+    box-sizing: border-box;
+    margin-top: 0.65vh;
+    background-color: rgba(4, 11, 39, 0.6);
+    .waterNavTitle{
+      width: 18.75vw;
+      height: 3.24vh;
+      // background: rgba(255, 255, 255, 0.3);
+      box-sizing: border-box;
+      // border-left: 0.16vw solid #009aff;
+      font-style: SourceHanSansCN-Regular;
+      font-size: 1.48vh;
+      line-height: 4.24vh;
+      letter-spacing: 0px;
+      color: #ffffff;
+      text-align: left;
+      /*text-indent: 1.04vw;*/
+    }
+    .classItem{
+      position: relative;
+      width: 5.68vw;
+      height: 2.41vh;
+      background-color: rgba(255, 255, 255, 0.1);
+      font-size: 0.73vw;
+      color: #fff;
+      text-align: center;
+      margin-top: 1.85vh;
+      .icon_box{
+        width: 1.35vw;
+        height: 1.35vw;
+        background-color: rgba(0, 126, 255, 0.6);
+      }
+      .text{
+        width: 100%;
+        height: 2.41vh;
+        line-height: 2.41vh;
+      }
+      &:nth-child(even){
+        margin-left: 3.13vw;
+      }
+      .summarizeIcon{
+        width: 1.04vw;
+        height: 1.04vw;
+      }
+      .guo_icon{
+        background-image: url("../../assets/image/国@2x.png");
+      }
+      .sheng_icon{
+        background-image: url("../../assets/image/省@2x.png");
+      }
+      .shi_icon{
+        background-image: url("../../assets/image/市@2x.png");
+      }
+      .qu_icon{
+        background-image: url("../../assets/image/区@2x.png");
+      }
+      .chang_icon{
+        background-image: url("../../assets/image/常规@2x.png");
+      }
+      .qi_icon{
+        background-image: url("../../assets/image/其他@2x.png");
+      }
+    }
+  }
+</style>
+<style scoped lang="scss">
+  .swiper-container{
+    height: 100%;
+    .swiper-slide{
+      display: flex;
+      align-items: center;
+      &:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+  }
 </style>
