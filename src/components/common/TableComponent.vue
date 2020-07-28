@@ -56,10 +56,10 @@
                       v-if="tableHeaderList[subIndex].isNoiseGrade"
                       :class="setNoiseGradeDot(item)"
               ></div>
-              <div
-                      v-if="tableHeaderList[subIndex].isGrade"
-                      :class="setGradeDot(item)"
-              ></div>
+<!--              <div-->
+<!--                      v-if="tableHeaderList[subIndex].isGrade"-->
+<!--                      :class="setGradeDot(item)"-->
+<!--              ></div>-->
               <div v-if="tableHeaderList[subIndex].isReach"
                    :class="setReachDot(item)"
               ></div>
@@ -71,7 +71,7 @@
                 ||tableHeaderList[subIndex].isReach_i ? (item?'达标':'不达标'):
                 tableHeaderList[subIndex].isDispose?(item==0?'未处理':item==1?'处理中':'已处理'):
                 tableHeaderList[subIndex].isWarnSyle&&tableHeaderList[subIndex].isWarnSyleText?
-                (item==1?'白色预警':item==2?'黄色预警':item==3?'红色预警':''):
+                '':
                 tableHeaderList[subIndex].isGrade?(item==1?tableHeaderList[subIndex].textArr[0]:item==2?tableHeaderList[subIndex].textArr[1]:tableHeaderList[subIndex].textArr[2]):
                 item}}
               </div>
@@ -103,10 +103,10 @@
                           v-if="tableHeaderList[subIndex].isNoiseGrade"
                           :class="setNoiseGradeDot(item)"
                   ></div>
-                  <div
-                          v-if="tableHeaderList[subIndex].isGrade"
-                          :class="setGradeDot(item)"
-                  ></div>
+<!--                  <div-->
+<!--                          v-if="tableHeaderList[subIndex].isGrade"-->
+<!--                          :class="setGradeDot(item)"-->
+<!--                  ></div>-->
                   <div v-if="tableHeaderList[subIndex].isReach"
                        :class="setReachDot(item)"
                   ></div>
@@ -118,9 +118,9 @@
                     ||tableHeaderList[subIndex].isReach_i ? (item?'达标':'不达标'):
                     tableHeaderList[subIndex].isDispose?(item==0?'未处理':item==1?'处理中':'已处理'):
                     tableHeaderList[subIndex].isWarnSyle&&tableHeaderList[subIndex].isWarnSyleText?
-                    (item==1?'白色预警':item==2?'黄色预警':item==3?'红色预警':''):
+                  '':
                     tableHeaderList[subIndex].isGrade?(item==1?tableHeaderList[subIndex].textArr[0]:item==2?tableHeaderList[subIndex].textArr[1]:tableHeaderList[subIndex].textArr[2]):
-                    item}}
+                    item=='白色预警' || item == '红色预警' || item == '黄色预警'?'': item}}
                   </div>
                 </div>
               </div>
@@ -138,7 +138,7 @@
 /**
  *
  * @作者: LinWenJun
- * 属性： 
+ * 属性：
  *      tableHeaderList 单元格配置(宽度必须传, 作为每行表头单元格的固定大小)
         tableHeaderList： [{
             name: "预警状态",// 表头名称
@@ -233,6 +233,13 @@ export default {
     }
     // console.log('this.taskClassthis.taskClass',this.taskClass)
   },
+    watch: {
+      data:{
+          handler(val) {
+            this.showSwiper = this.showNum && this.data.length>this.showNum
+          }
+      }
+    },
   methods: {
     changeSelectItemed(val) {
       this.$emit('filtrateClass',val.label)
@@ -252,9 +259,9 @@ export default {
     setWarnSyle(item) {
       return item == '白色预警'||item==1 ? 'w_warn': item == '黄色预警'||item==2 ? 'y_warn' :item == '红色预警'||item==3 ? 'r_warn' :  item == ''
     },
-    setGradeDot(item) {
-      return item == 1 ? 'mild_dot' : item == 2 ? 'medium_dot' : 'severe_dot'
-    },
+    // setGradeDot(item) {
+    //   // return item == 1 ? 'mild_dot' : item == 2 ? 'medium_dot' : 'severe_dot'
+    // },
     setNoiseGradeDot(item) {
       console.log(item)
       return item == 1 ? 'mild_noise' : item == 2 ? 'mild_dot' : 'severe_dot'
@@ -264,7 +271,9 @@ export default {
     },
     setColor(item,index) {
       let str
-      if (this.tableHeaderList[index].isReach_i) {
+      if(this.tableHeaderList[index].isGrade){  //判断轻度污染、重度污染等字体颜色
+        str= item == 1 ? 'mild_dot' : item == 2 ? 'medium_dot' : 'severe_dot'
+      }else if (this.tableHeaderList[index].isReach_i) {
         str = item?'reach_c':'noreach_c'
       } else if(this.tableHeaderList[index].isDispose) {
         // console.log(item)
@@ -396,7 +405,7 @@ export default {
 .warnStyleIcon{
   width: 0.63vw;
   height: 0.63vw;
-  margin-right: 0.25vw;
+  margin-left: 1.25vw;
 }
 .w_warn{
   background-image: url("../../assets/image/w_warn@2x.png");

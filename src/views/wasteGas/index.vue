@@ -131,7 +131,6 @@
                                 <span class="text">{{item.label}}</span>
                                 <i :class="[item.icon, 'ICON mt_icon ab_center']"></i>
 <!--                                <div class="airIcon ab_center"></div>-->
-
                             </li>
                         </ul>
                     </div>
@@ -149,7 +148,7 @@
                             <div class="mainObjIcon mainObjposi"></div>
                         </div>
                     </div>
-<!--                    排污许可排放-->
+<!--                    -->
                     <div class="situation">
                         <div class="subTitle">
                             <div class="dotIcon"></div>排污许可排放
@@ -157,12 +156,13 @@
                         <div class="barChart">
                             <ul class="data">
                                 <li class="f_c_center" v-for="(item,index) in tasksumaryObj.gradeTask" :key="index">
-                                    <div class="title">{{item.gradeText}}</div>
+                                    <div class="title">{{item.gradeText}}
+                                    </div>
                                     <div class="line">
-                                        <div :style="{width:item.value}"></div>
+                                        <div style="max-wdith:150px" :style="{width:`${parseInt(item.value)/parseInt(item.maxVal)*100}%`}"></div>
                                     </div>
                                     <!--                                    <div class="value">{{item.value}}|{{item.value}}</div>-->
-                                    <div class="value">123t&nbsp;|&nbsp;<span class="capacity">123tt</span></div>
+                                    <div class="value">{{item.value}}&nbsp;|&nbsp;<span class="capacity">{{item.maxVal}}</span></div>
                                 </li>
                             </ul>
                             <ul class="rule flex">
@@ -173,6 +173,7 @@
                 </div>
             </div>
         </page-layout>
+        <Loading :requst-num="4" :loadings="loadings"></Loading>
         <Popup :isShow.sync="showUploadPop" w="22.45vw" h="28.52vh" title="监控点上传率概况">
             <ul class="upload-popContainer">
                 <li class="p-areaList f_r_between" v-for="(item,index) in pollutionWarnObj.popUploadRate" :key="index">
@@ -206,6 +207,7 @@
     import toggleMap from "../../components/toggleMap";
     import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
     import {effluent_swiperOption} from '../../components/common/swiperOption'
+    import Loading from '../../components/loading';
 
     // @ is an alias to /src
     export default {
@@ -228,7 +230,8 @@
             PictorialBarII,
             SelectComponent,
             Popup,
-            toggleMap
+            toggleMap,
+            Loading,
         },
         data() {
             return {
@@ -309,7 +312,8 @@
                 inspectsumary:null,
                 enterprise:null,
                 factor:null,
-                rateCode:''
+                rateCode:'',
+                loadings: [],
             }
         },
         created() {
@@ -347,7 +351,9 @@
             },
             getInspectsumary() {
                 this.$get('/i301inspectsumary').then(res => {
+                  // console.log('-------------------------------------',res)
                     if (res.code == 0) {
+                        this.loadings.push(true)
                         this.inspectsumary = res.data
                     } else {
                         console.log(res.err_msg)
@@ -357,6 +363,7 @@
             getPollutionWarn() {
                 this.$get('/i30234uploadPollutionWarn').then(res => {
                     if (res.code == 0) {
+                        this.loadings.push(true)
                         this.pollutionPieObj =  res.data.pollutionRate
                         this.wr_spListList = this.dataDispose(res.data.warnTable,1)
                         this.pollutionWarnObj =  res.data
@@ -379,6 +386,7 @@
                 }
                 this.$get('/i305polluteAbatement',params).then(res => {
                     if (res.code == 0) {
+                        this.loadings.push(true)
                         this.abatementObj=res.data
                         this.abatementObj.selectOption = {
                             placeholder: res.data.currentSelected.label
@@ -392,8 +400,9 @@
             },
             getTasksumary() {
                 this.$get('/i3067tasksumary').then(res => {
+                  console.log(res)
                     if (res.code == 0) {
-
+                        this.loadings.push(true)
                         this.tasksumaryObj =  res.data
                         this.dataDispose(res.data.realStyle,2)
 
@@ -407,7 +416,6 @@
                     if (res.code == 0) {
                         // this.airQualityObj =  res.data
                         // this.dataDispose(1,res.data.aqiRankTable)
-
                     } else {
                         console.log(res.err_msg)
                     }
@@ -667,7 +675,6 @@
                     margin-top: 0.83vh;
                 }
             }
-
         }
     }
     .rateChart{

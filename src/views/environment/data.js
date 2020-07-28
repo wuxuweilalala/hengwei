@@ -96,7 +96,7 @@ export let rp_headerList_warn = [   //预警
         }
     },
     {
-        name: "监控点名称",
+        name: "点位名称",
         width: "14vw",
         style: {
             width: "12vw",
@@ -149,7 +149,7 @@ export let rp_headerList_forecast = [//预报
         }
     },
     {
-        name: "监控点名称",
+        name: "点位名称",
         width: "11vw",
         style: {
             width: "10vw",

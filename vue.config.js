@@ -16,7 +16,22 @@ module.exports = {
     configureWebpack: {
         externals: {
             'AMap': 'AMap' // 高德地图配置
-        }
+        },
+        module: {
+            rules: [
+                {
+                    // test: /\.(png|jpg|gif)$/i,
+                    // use: [
+                    //     {
+                    //         loader: 'url-loader',
+                    //         options: {
+                    //             limit: true,
+                    //         },
+                    //     },
+                    // ],
+                },
+            ],
+        },
     },
     devServer: {
         open: false,
@@ -34,6 +49,7 @@ module.exports = {
                 }
             }
         }
-    }
+    },
+
 
 }

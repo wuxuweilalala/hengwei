@@ -7,6 +7,10 @@ const service = axios.create({
 });
 
 service.interceptors.request.use(function(config) {
+    // config.headers={
+    //     // Authorization:sessionStorage.getItem('Authorization'),
+    //     'Content-Type':'application/json;charset=UTF-8',
+    // };
     return config;
 }, function(error) {
     return Promise.reject(error);
@@ -19,7 +23,22 @@ service.interceptors.request.use(function(config) {
  * @returns {Promise}
  */
 
+function changeParams(params) {
+    let param = {}
+    let userName = sessionStorage.getItem('userName')
+    let password = sessionStorage.getItem('password')
+    for (let i in params) {
+        param[`param.${i}`] = params[i]
+    }
+    param['param.userName'] = userName
+    param['param.password'] = password
+    return param
+}
+
 function get(url, params = {}) {
+    if(url !== '/i001login') {
+        params = changeParams(params)
+    }
     return new Promise((resolve, reject) => {
         service
             .get(url, {

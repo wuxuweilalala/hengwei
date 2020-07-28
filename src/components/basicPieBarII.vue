@@ -48,7 +48,7 @@
         },
         methods: {
             set() {
-                console.log(123)
+                // console.log(123)
             },
             vwTopx(vw) {
                 let data;
@@ -92,7 +92,7 @@
             let datas = []
             let trafficWay = [];
             let innerData=[];
-            console.log('this.chartList',this.chartList)
+            // console.log('this.chartList',this.chartList)
             let max = 0
             let maxValue = this.chartList.reduce((sum, obj) => {
                 // console.log(Number(obj.currVal.replace('%','')),sum )
@@ -101,7 +101,7 @@
                 return sum += num
 
             },0);
-            console.log('max',max)
+            // console.log('max',max)
             this.chartList.forEach((item, index) => {
                 trafficWay.push({
                     name: item.name,

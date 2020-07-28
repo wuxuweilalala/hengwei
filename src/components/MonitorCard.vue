@@ -3,9 +3,9 @@
         <div class="pie f_center">
             <div>
                 <basicPieIII  w="3.49vw" h="3.49vw"
-                              :value="classObj.value"
-                              :rate="classObj.rate"
-                              :areaName="classObj.label"
+                              :value="subclassObj.value"
+                              :rate="parseInt(subclassObj.rate)"
+                              :areaName="subclassObj.label"
                               chartStyle="2"
                 />
             </div>
@@ -51,6 +51,10 @@
         data() {
             return {
             }
+        },
+        mounted(){
+          // console.log(this.classObj)
+            // console.log(this.districtList)
         }
     }
 </script>

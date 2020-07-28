@@ -4,7 +4,7 @@
       <div slot="pageLeft" class="pl-container">
         <!--        监测区域内噪声监测整体概况-->
         <div class="airQuality bg_c lineshadow" v-if="showAQI">
-          <chart-title :title="'污染源预警实时一览'" w="60%"/>
+          <chart-title :title="'超标工地占比情况'" w="60%"/>
           <div class="waterPolo flex">
             <div class="polo">
               <div class="poloBox">
@@ -15,11 +15,11 @@
             </div>
             <div class="area f_column">
               <span class="text">{{airQualityObj.noiseChartVal}}dB</span>
-              <span>噪声标准</span>
+              <span>超标工地数量</span>
             </div>
             <div class="source f_column">
               <span class="text">{{airQualityObj.noiseRealVal}}dB</span>
-              <span>实际噪声值</span>
+              <span>已做信访数量</span>
             </div>
           </div>
           <TerritoryClass  v-if="airQualityObj"  :airQualityObj="airQualityObj" />
@@ -82,6 +82,7 @@
         <TableComponent :tableHeaderList="fi_headerList" :tableOption="tableOption" :data="fi_spListList" :showNum="5"/>
       </div>
     </div>
+    <Loading :requst-num="3" :loadings="loadings"></Loading>
   </div>
 </template>
 
@@ -100,6 +101,8 @@ import Popup from "../../components/Popup";
 import toggleMap from "../../components/toggleMap";
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 import {noise_swiperOption} from '../../components/common/swiperOption'
+import Loading from '../../components/loading';
+
 
 export default {
   name: "Noise",
@@ -113,7 +116,8 @@ export default {
     Popup,
     toggleMap,
     Swiper,
-    SwiperSlide
+    SwiperSlide,
+    Loading,
   },
   data() {
     return {
@@ -133,7 +137,8 @@ export default {
       airGradeList:null,
       airQualityTable:null,
       showAQI:false,
-      showTable:false
+      showTable:false,
+      loadings: [],
     }
   },
   created() {
@@ -147,13 +152,14 @@ export default {
     },
     getNoiseOverview() {
       this.$get('/i501NoiseOverview').then(res => {
+        // console.log(res)
         if (res.code == 0) {
           this.airQualityObj =  res.data
-
+          this.loadings.push(true)
           // this.dataDispose(1,res.data.aqiRankTable)
           console.log('res.data',res.data)
         } else {
-          console.log(res.err_msg)
+          // console.log(res.err_msg)
         }
         this.showAQI=true
       })
@@ -161,7 +167,9 @@ export default {
     getProportion() {
       this.$get('/i502NoiseGradeProportion').then(res => {
         if (res.code == 0) {
-          // this.airQualityObj =  res.data
+          this.loadings.push(true)
+
+            // this.airQualityObj =  res.data
           // this.dataDispose(1,res.data.aqiRankTable)
           this.airGradeList = res.data
           // console.log('this.airGradeList',this.airGradeList)
@@ -173,6 +181,8 @@ export default {
     getEarlyWarning() {
       this.$get('/i503NoiseEarlyWarning').then(res => {
         if (res.code == 0) {
+          this.loadings.push(true)
+
           this.airQualityTable =  res.data
           this.dataDispose()
           this.showTable = true
@@ -296,7 +306,7 @@ export default {
         width: 4.06vw;
         height: 4.06vw;
         background-size: 100% 100%;
-        margin: 1vh 0 0 1vw;
+        margin: 0.5vw 0 0 1vw;
         background-repeat: no-repeat;
         background-image: url("../../assets/image/environment/circle@2x.png");
       }

@@ -1,7 +1,7 @@
 <template>
     <div class="doughnutChartItem">
         <v-chart :options="chartOptions" autoresize class="doughnutChart"></v-chart>
-        <div>
+        <div class="doughnutChartItem-list">
             <div v-for="(item, index) in mainObjList" :key="index">
                 <div>{{item.label}}</div>
                 <div>{{item.value}}%</div>
@@ -27,7 +27,7 @@
             }
         },
         created() {
-            console.log('this.mainObjList',this.mainObjList)
+            // console.log('this.mainObjList',this.mainObjList)
             let value = 100
             let legendData = []
             let colors = ["rgb(0,154,255)", "#5fede1", "#fe7d44", "#ffffff"];
@@ -94,6 +94,16 @@
         margin: 0 auto;
         display: flex;
         justify-content: space-between;
+        &-list{
+            height: 100%;
+            overflow-y: scroll;
+        }
+        ::-webkit-scrollbar {
+            display: none;
+            width: 0.16vw;
+            height: 0.16vw;
+        }
+
     .doughnutChart {
         width: 7.5vw;
         height: 10.56vh;

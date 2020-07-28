@@ -121,7 +121,7 @@
 }
 
 //表格里的Icon 等级区分
-.gradeDot,.mild_dot,.medium_dot,.severe_dot,.reach_dot,.noreach_dot,.mild_noise {
+.gradeDot,.reach_dot,.noreach_dot,.mild_noise {
   position: relative;
   width: 0.63vw;
   height: 0.63vw;
@@ -141,7 +141,9 @@
     border-radius: 50%;
   }
 }
-
+.grade_dot{
+  margin-left: 0.5vw;
+}
 .mild_noise{ //白色预警
   background-color: rgba(255, 255, 255, 0.5);
   &:before{
@@ -150,22 +152,29 @@
 }
 
 .mild_dot{ //轻度
-  background-color: rgba(255, 228, 0, 0.5);
-  &:before{
-    background-color: rgba(255, 228, 0, 1);
-  }
+  color:rgba(255, 228, 0, 1) ;
+  padding-left: 0.5vw;
+  //background-color: rgba(255, 228, 0, 0.5);
+  //&:before{
+  //  background-color: rgba(255, 228, 0, 1);
+  //}
 }
 .medium_dot{ //中度
-  background-color: rgba(254, 125, 68, 0.5);
-  &:before{
-    background-color: rgba(254, 125, 68, 1);
-  }
+  color: rgba(254, 125, 68, 1) ;
+  padding-left: 0.5vw;
+  //background-color: rgba(254, 125, 68, 0.5);
+  //&:before{
+  //  background-color: rgba(254, 125, 68, 1);
+  //}
 }
 .severe_dot{ //重度
-  background-color: rgba(255, 69, 72, 0.5);
-  &:before{
-    background-color: rgba(255, 69, 72, 1);
-  }
+  color:  rgba(255, 69, 72, 1) ;
+  font-weight: bold;
+  padding-left: 0.5vw;
+  //background-color: rgba(255, 69, 72, 0.5);
+  //&:before{
+  //  background-color: rgba(255, 69, 72, 1);
+  //}
 }
 .reach_dot {//达标
   background-color: rgba(14, 212, 144, 0.5);
@@ -192,7 +201,8 @@
 .mainObjIcon{
   width: 4.84vw;
   height: 4.84vw;
-  background-size: 100% 100%;
+  background-size: 84% 84%;
+  background-position: 50% 0%;
   background-repeat: no-repeat;
   background-image: url("../../assets/image/mainObjIcon_1.png");
 }

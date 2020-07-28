@@ -95,7 +95,7 @@
                       this.setTableList()
                       this.taskClass = res.data.taskClass
                   } else {
-                      console.log(res.err_msg)
+                      // console.log(res.err_msg)
                   }
               })
           },
@@ -144,7 +144,7 @@
                         width: "12vw",
                     },
                     {
-                        name: "站位名称",
+                        name: "点位名称",
                         width: "12vw",
                     },
                     {

@@ -5,7 +5,7 @@
       <div class="waterNavLeftItem1">
         <div class="waterNavLeftItem1Title">监测区域内监测情况概述</div>
         <div class="territoryBox">
-          <TerritoryClass  v-if="airQualityObj" :airQualityObj="airQualityObj" />
+          <TerritoryClass  v-if="airQualityObj" :airQualityObj="airQualityObj" :classObj="airQualityObj" />
         </div>
       </div>
       <div class="summarizeClass lineshadow">
@@ -53,9 +53,9 @@
                           class="pollutantEnterprisesListItem"
                   >
                     <div class="pollutantEnterprisesListItemTop">
-                      <div>{{charOptions5Obj[0].name[index]}}</div>
-                      <div>{{Math.floor(charOptions5Obj[0].value[index]*100)}}%&nbsp;|
-                        &nbsp;{{Math.floor(charOptions5Obj[0].value[index]*100)}}%</div>
+                      <div class="title">{{charOptions5Obj[0].name[index]}}</div>
+                      <div class="num">{{charOptions5Obj[0].value[index]}}t|
+                        &nbsp;{{charOptions5Obj[0].maxVal[index]}}t</div>
                     </div>
                     <!-- <div class="pollutantEnterprisesListContent"></div> -->
                     <!-- 柱形图 -->
@@ -76,8 +76,8 @@
                 >
                   <div class="pollutantEnterprisesListItemTop">
                     <div>{{charOptions5Obj[0].name[index]}}</div>
-                    <div>{{Math.floor(charOptions5Obj[0].value[index]*100)}}%&nbsp;|
-                      &nbsp;{{Math.floor(charOptions5Obj[0].value[index]*100)}}%</div>
+                    <div>{{Math.floor(charOptions5Obj[0].value[index])}}%&nbsp;|
+                      &nbsp;{{Math.floor(charOptions5Obj[0].maxVal[index])}}%</div>
                   </div>
                   <!-- <div class="pollutantEnterprisesListContent"></div> -->
                   <!-- 柱形图 -->
@@ -205,6 +205,7 @@
         </div>
       </template>
     </Popup>
+      <Loading :requst-num="7" :loadings="loadings"></Loading>
   </div>
 </template>
 
@@ -253,6 +254,8 @@ import "echarts/lib/chart/pictorialBar";
 import "echarts/lib/chart/bar";
 import "echarts/lib/chart/pie";
 import {mapGetters} from 'vuex';
+import Loading from '../../components/loading';
+
 
 export default {
   name: "Home",
@@ -310,7 +313,7 @@ export default {
           }
         },
         {
-          name: "站位名称",
+          name: "点位名称",
           width: "10vw",
           style: {
             width: "8.5vw",
@@ -418,7 +421,11 @@ export default {
       updateAbatement:true,
       enterprise:null,
       factor:null,
-      rateCode:''
+      rateCode:'',
+      loading: true,
+      parcent: '0%',
+      loadWidth: 0,
+      loadings: [],
     };
   },
   created() {
@@ -452,9 +459,12 @@ export default {
     this.getTaskList()
   },
   computed:{
-...mapGetters('effluent',{
-    pieValue:'getPieValue'
-}),
+      ...mapGetters('effluent',{
+          pieValue:'getPieValue'
+      }),
+      width() {
+          return this.loadWidth + 'vw'
+      }
   },
   components: {
     ChartTitle,
@@ -470,16 +480,22 @@ export default {
     basicPie,
     MonitorCard,
     Swiper,
-    SwiperSlide
+    SwiperSlide,
+    Loading,
+  },
+  mounted(){
   },
   methods: {
     getNoiseOverview() {
       this.$get('/i101inspectsumary').then(res => {
+        // console.log(res)
         if (res.code == 0) {
+          this.loadings.push(true)
           this.airQualityObj =  res.data
-          // console.log('res.data',res.data)
+          this.monitorObj=res.data.situation
+          // console.log(this.monitorObj)
         } else {
-          console.log(res.err_msg)
+          // console.log(res.err_msg)
         }
         this.showAQI=true
       })
@@ -510,6 +526,7 @@ export default {
     getPopData() {
       this.$get('/i308PopupWarnTable').then(res => {
         if (res.code == 0) {
+          this.loadings.push(true)
           let newArr = []
           res.data.forEach((item,i) => {
             // console.log(item)
@@ -534,9 +551,10 @@ export default {
         params.code = this.rateCode
       }
       this.$get('/i105pollreducerate',params).then(res => {
-        console.log(11111,res.data)
+        // console.log(11111,res.data)
         this.updateAbatement=false
         if (res.code == 0) {
+          this.loadings.push(true)
           this.abatementObj=res.data
           this.abatementObj.selectOption = {
             placeholder: res.data.currentSelected.label
@@ -550,7 +568,7 @@ export default {
             rate:res.data['处理前']['消减率']
           }
         } else {
-          console.log(res.err_msg)
+          // console.log(res.err_msg)
         }
         this.$nextTick(() => {
           this.updateAbatement=true
@@ -561,7 +579,10 @@ export default {
     getTaskList() {
       this.$get('/i106tasksumary').then(res => {
         // console.log('123',res.data)
+
+
         if (res.code == 0) {
+          this.loadings.push(true)
           this.charOPtions9List = res.data["预警状态"];
           // this.mt_pieList = res.data['占比'].realStyle
           // let newArr = []
@@ -576,7 +597,7 @@ export default {
 
           // // this.popData = newArr
         } else {
-          console.log(res.err_msg)
+          // console.log(res.err_msg)
         }
       })
     },
@@ -587,6 +608,8 @@ export default {
       getPollution().then(data => {
         this.charOptions5Obj = {}
         let arr = []
+        this.loadings.push(true)
+
         data["主要污染物"].name.forEach(item => {
           arr.push({label:item})
         })
@@ -595,7 +618,12 @@ export default {
         })
         // console.log(arr)
         this.charOptions5Obj[1] = arr;
-        this.charOptions5Obj[0] = data["污染源企业"];
+        this.charOptions5Obj[0]=data["污染源企业"]
+        // console.log(this.charOptions5Obj[0])
+        // this.charOptions5Obj[0].rate.filter(function(item){
+        //   console.log(item*100)
+        //   return item*100
+        // })
         // 列表的图形配置
         self.charOptions5Obj[0].name.forEach((item, index) => {
           self.charOPtions8.push(
@@ -603,14 +631,17 @@ export default {
               name: item,
               value: self.charOptions5Obj[0].value[index]*100
             })
-          );
+        );
         });
-        console.log(this.charOptions5Obj[0])
+        // console.log(this.charOptions5Obj[0])
+        // console.log(this.charOPtions8)
       });
 
       // 污染源预警实时一览
       getRealTimePollutionSource().then(data => {
         this.tableList = [];
+        this.loadings.push(true)
+
         // console.log('data',data);
         data.dataList.forEach((item,i) => {
           this.tableList.push([
@@ -630,6 +661,8 @@ export default {
       // 监控点上传率概况
       getMonitorUpload().then(data => {
         // console.log('data',data)
+        this.loadings.push(true)
+
         this.charOPtions7List[0] = data["监控上传率"]; // 监控上传率
         this.charOPtions7List[1] = Object.entries(data["地域详情"]); // 地域详情
         this.charOPtions7List[2] = data["list"];
@@ -650,13 +683,29 @@ export default {
       } else {
         return str
       }
-      }
+      },
+
+    value:function(value){
+      return value.toFixed(2)
+    }
     },
   watch:{
-    pieValue(){
-      this.charOPtions6 = pie3(this.pieValue); // 地域分类
-      this.charOptions6List =this.pieValue.value;
-    }
+      pieValue(){
+          this.charOPtions6 = pie3(this.pieValue); // 地域分类
+          this.charOptions6List =this.pieValue.value;
+      },
+      loadings: {
+          handler(val) {
+              if(val.length === 5) {
+                  setTimeout(() => {
+                      this.loading = false
+                  }, 800)
+              }
+              this.loadWidth = this.loadWidth + 2
+              let num = Number(this.parcent.replace('%', ''))
+              this.parcent = num + 10/9 + '%'
+          }
+      }
   }
 };
 </script>
@@ -980,13 +1029,21 @@ export default {
               font-family: SourceHanSansCN-Regular;
               margin: 0 auto;
               color: #ffffff;
+                .title {
+                    max-width: 75%;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+                .num {
+                    max-width: 20%;
+                }
               > div:nth-child(1) {
                 font-size: 1.11vh;
                 line-height:  1.11vh;
                 letter-spacing: 0vh;
               }
               > div:nth-child(2) {
-                font-size: 1.67vh;
+                font-size: 1.11vh;
                 line-height: 1.67vh;
               }
             }

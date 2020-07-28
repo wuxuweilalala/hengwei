@@ -17,7 +17,7 @@ export let wr_headerList = [
         }
     },
     {
-        name: "站位名称",
+        name: "点位名称",
         width: "8.5vw",
         style:{
             // marginLeft:'0.5vw',

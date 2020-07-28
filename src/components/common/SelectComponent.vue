@@ -10,11 +10,13 @@
       <template v-for="(item, index) in selectList">
         <div
         :key="index"
-        :value="item.value"
+        :value="item.companyName"
         :style="{...style}"
+        :title="item.companyName"
+        class="cell"
         v-if="show"
         @click="changeDom($event, index, item),show=!show"
-      >{{item.label}}</div>
+      >{{item.companyName}}</div>
       </template>
     </div>
   </div>
@@ -36,7 +38,8 @@
 export default {
   props: ["selectList", "selectOptionStyle", "selectOption"],
   created() {
-    this.selectDom = `<div style="color: #6b7786;text-align: left;text-indent: 0.3vw;user-select: none;">${this.selectPlaceholder}</div>`;
+      this.selectDom = `<div style="color: #6b7786;text-align: left;text-indent: 0.3vw;user-select: none;white-space: nowrap;
+                    max-width: 80%; overflow: hidden;">${this.selectPlaceholder}</div>`;
   },
   data() {
     return {
@@ -54,12 +57,12 @@ export default {
       }
     },
     changeDom(e, index, item) {
-      this.selectDom = item.label;
+      this.selectDom = item.companyName;
       this.item = this.selectList[index];
       // this.$emit("update:selectItemed", this.item);
       this.$emit("changeSelectItemed", item);
 
-      console.log('selectcomponent',this.item);
+      // console.log('selectcomponent',this.item);
     }
   },
   computed: {
@@ -93,6 +96,7 @@ export default {
     height: 1.9vh;
     border: 0.09vh solid rgba(255, 255, 255, 0.8);
     position: relative;
+      overflow: hidden;
     // box-sizing: border-box;
     &::after {
       content: "";
@@ -122,5 +126,12 @@ export default {
 }
 .showBorder {
   border: 1px solid rgba(255, 255, 255, 0.8);
+
 }
+    .cell {
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 </style>

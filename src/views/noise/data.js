@@ -57,7 +57,7 @@ export let wi_headerList = [
         }
     },
     {
-        name: "监控点名称",
+        name: "点位名称",
         width: "9vw",
         style:{
             width:'9vw'
@@ -113,7 +113,7 @@ export let fi_headerList = [
         }
     },
     {
-        name: "监控点名称",
+        name: "点位名称",
         width: "11vw",
         style:{
             width:'11.5vw'
@@ -175,7 +175,7 @@ export let nr_headerList = [
         }
     },
     {
-        name: "监控点名称",
+        name: "点位名称",
         width: "6vw",
         style:{
             width:'5vw'

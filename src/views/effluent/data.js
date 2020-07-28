@@ -150,7 +150,7 @@ function pie3(data) {
 
 // 主要污染物饼状图
 function pieLeft(data) {
-    console.log(data, '主要污染物饼状图11111111111111111111')
+    // console.log(data, '主要污染物饼状图11111111111111111111')
     let value = 100
     let datas = []
     // console.log(data)
@@ -276,7 +276,7 @@ function pieLeft(data) {
 
 // 污染物企业
 function iconogram3(data) {
-    console.log('污染物企业',data.value=30)
+    // console.log('污染物企业')
     let color = ''
     if (data.value < 20) {
         color = new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
@@ -844,7 +844,7 @@ function pieRight(data) {
     data[2].forEach(num => {
         max =  num > max ?  num : max
     })
-    console.log('pieRight',data[2],trafficWay,max)
+    // console.log('pieRight',data[2],trafficWay,max)
     var data = [];
     var innerData=[];
     var color = ['rgb(254,125,68)', 'rgb(0,154,255)', 'rgb(255,255,255)'];

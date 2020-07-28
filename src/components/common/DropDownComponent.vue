@@ -38,10 +38,24 @@ export default {
     "dropdownList",
     "dropdownOptionListStyle",
     "dropdownOptionListItemStyle",
-    "isNoDown"
+    "isNoDown",
+    "current"
   ],
   created() {
-    this.dropdownDom = this.dropdownList[0].label;
+      this.dropdownDom = this.dropdownList[0].label;
+      this.showList = [this.dropdownList[this.current]]
+      this.SelectIndex=this.current
+  },
+  watch:{
+    current(){
+      // console.log(this.current)
+      this.showList = [this.dropdownList[this.current]]
+      this.SelectIndex=this.current
+    },
+
+    showList(){
+      // console.log(this.showList)
+    }
   },
   data() {
     return {
@@ -72,13 +86,12 @@ export default {
         this.$store.commit('effluent/setPieValue',this.showList[0])
       } else {
         this.showList = this.dropdownList
-        
       }
       // 切换显示
       this.show = !this.show
-      this.dropdownList.unshift(item);
-      this.dropdownList.splice(index+1, 1);
-      // console.log(' this.item', item)
+      // this.dropdownList.unshift(item);
+      // this.dropdownList.splice(index+1, 1);
+      // // console.log(' this.item', item)
       this.$emit("changeSelectItemed", item);
     }
   },

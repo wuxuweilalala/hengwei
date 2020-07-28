@@ -60,8 +60,8 @@
       <div class="map">
         <toggleMap :id="'environment'"/>
         <div class="mapWarnTips">
-          <Swiper :options="swiperOption"  v-if="[1,1,1,1,1,1]">
-            <template v-for="(item, index) in ['1','1','1','1','1','1']">
+          <Swiper :options="swiperOption"  v-if="msgForecast.length>0">
+            <template v-for="(item, index) in msgForecast">
               <swiper-slide :key="index">
                 <WarnTips :msgForecast="item" />
               </swiper-slide>
@@ -104,7 +104,7 @@
         </div>
       </div>
       <div class="sewagePlant2 chart_bg">
-        <chart-title :title="'污水厂进出水质达标情况'" class="p_0.52" w="0"/>
+        <chart-title :title="'超标点污染溯源'" class="p_0.52" w="0"/>
         <div class="sp2-content">
           <div class="selectBox">
             <div class="selectList f_r_between" v-if="waterquanlityObj.selectArr">
@@ -123,11 +123,13 @@
             </div>
           </div>
           <div class="sp-listData">
-            <TableComponent v-if="sp_spListList" :tableHeaderList="sp_headerList" :tableOption="sp_tableOption" :data="sp_spListList" :showNum="12"/>
+            <TableComponent v-if="sp_spListList" :tableHeaderList="sp_headerList" :tableOption="sp_tableOption" :data="sp_spListList" :showNum="showNum"/>
           </div>
         </div>
       </div>
     </div>
+      <Loading :requst-num="5" :loadings="loadings"></Loading>
+
   </div>
 </template>
 
@@ -149,6 +151,8 @@
     mq_headerList,mq_spListList,mq_tableOption,
     sp_headerList,sp_spListList,sp_tableOption,
   } from './data.js'
+  import Loading from '../../components/loading';
+  import { mapGetters } from 'vuex';
 
   export default {
     name: "Environment",
@@ -162,7 +166,8 @@
       SelectComponent,
       WarnTips,
       Swiper,
-      SwiperSlide
+      SwiperSlide,
+      Loading,
     },
     data() {
       return{
@@ -201,7 +206,10 @@
         kmNum:[],
         showBasicLine:false,
         factor:null,
-        range:null
+        range:null,
+        loadings: [],
+        showNum: 12,
+        msgForecast:'',//滚动警告列表
       }
     },
     computed: {
@@ -224,7 +232,10 @@
           return obj ? obj.yData : []
         },
         set(val) {}
-      }
+      },
+        ...mapGetters('index', {
+            posCode: 'getPosCode',
+        }),
     },
     watch: {
       // activeIndex
@@ -244,7 +255,13 @@
           console.log('this.wateralerttable',this.wateralerttable)
           this.dataDispose(4,this.wateralerttable.prediction,null,'forecast')
         }
-      }
+      },
+        posCode(val) {
+            this.getWaterquanlitytable({
+                code: val,
+            })
+        }
+
     },
     created() {
       this.initData()
@@ -294,7 +311,7 @@
     },
     methods: {
       changeSelectItemed(val) {
-          this.waterweekObj.currentSelected.label=val.label
+          this.waterweekObj.currentSelected.companyName=val.companyName
           this.showBasicLine = false
           // this.waterweekObj.currentSelected.label='氨氮'
 
@@ -303,13 +320,14 @@
           })
       },
       changeSelectFactor(val) {
-        console.log(val)
-        this.factor = val.value
+        console.log('changeSelectFactor', val)
+        this.factor = val.companyCode
         this.getWaterquanlitytable()
+          this.showNum = 1
       },
       changeSelectRange(val) {
-        console.log(val)
-        this.range = val.value
+        console.log('changeSelectRange', val)
+        this.range = val.companyCode
         this.getWaterquanlitytable()
       },
       initData() {
@@ -323,6 +341,7 @@
       getWatersumaryall() { //水环境概况描述
         this.$get('/i201watersumaryall').then(res => {
           if (res.code == 0) {
+            this.loadings.push(true)
             this.waterInfoObj = res.data
             this.dataDispose(1,res.data.waterInfoList,this.waterInfoList)
           } else {
@@ -333,7 +352,8 @@
       getMonitoring() { //监测点位达标率
         this.$get('/i202inspectpassrate').then(res => {
           if (res.code == 0) {
-            this.dataDispose(2,res.data.monitorList,this.mt_pieList)
+              this.loadings.push(true)
+              this.dataDispose(2,res.data.monitorList,this.mt_pieList)
           } else {
             console.log(res.err_msg)
           }
@@ -343,7 +363,9 @@
         this.$get('/i203waterquanlityreal').then(res => {
           if (res.code == 0) {
             // console.log(1)
-            this.dataDispose(3,res.data)
+              this.loadings.push(true)
+
+              this.dataDispose(3,res.data)
           } else {
             console.log(res.err_msg)
           }
@@ -352,7 +374,9 @@
       getWateralerttable() {//河流断面、污水厂、水污染源预警预报轮播一览
         this.$get('/i204wateralerttable').then(res => {
           if (res.code == 0) {
-            // console.log('轮播',res.data)
+              this.loadings.push(true)
+          this.msgForecast=res.data.msgForecast
+              // console.log('轮播',res.data)
             this.wateralerttable = res.data
             if (!res.data.earlyWarn) return
             this.dataDispose(4,res.data.earlyWarn,null,'warn')
@@ -364,7 +388,9 @@
       getWaterweekchart() { //污水厂进出水水质达标情况
         this.$get('/i205waterweekchart').then(res => {
           if (res.code == 0) {
-            // console.log('水质达标情况',res.data)
+              this.loadings.push(true)
+
+              // console.log('水质达标情况',res.data)
             this.waterweekObj = res.data
             this.waterweekSelected = res.data.currentSelected
             this.waterweekObj.selectOption = {
@@ -377,29 +403,35 @@
 
         })
       },
-      getWaterquanlitytable() { //污水厂进出水水质达标情况
+      getWaterquanlitytable(param) { //污水厂进出水水质达标情况
         let params = {}
         if (this.factor) {
-          params.factor = this.factor
+          params.company = this.factor
         }
         if (this.range) {
-          params.range = this.range
+          params.kmCode = this.range
         }
+        for (let i in param) {
+            params[i] = param[i]
+        }
+        let self = this
         this.$get('/i206waterquanlitytable',params).then(res => {
           if (res.code == 0) {
-            // console.log('res.data',res.data)
-            this.waterquanlityObj = res.data
-            this.companyName = res.data.selectArr[0].selectList
-            this.kmNum = res.data.selectArr[1].selectList
-            this.companyName.selectOption = {
-              placeholder:  res.data.selectArr[0].currentSelected.label
-            }
-            this.kmNum.selectOption = {
-              placeholder:  res.data.selectArr[1].currentSelected.label
-            }
-            this.dataDispose(6,res.data.quanlitytable)
+              self.loadings.push(true)
+
+              // console.log('res.data',res.data)
+              self.waterquanlityObj = res.data
+              self.companyName = res.data.selectArr[0].selectList
+              self.kmNum = res.data.selectArr[1].selectList
+              self.companyName.selectOption = {
+                  placeholder:  res.data.selectArr[0].currentSelected.companyName
+                }
+              self.kmNum.selectOption = {
+                  placeholder:  res.data.selectArr[1].currentSelected.companyName
+                }
+              self.dataDispose(6,res.data.quanlitytable)
           } else {
-            console.log(res.err_msg)
+            // console.log(res.err_msg)
           }
         })
       },
@@ -623,7 +655,7 @@
           width: 4.06vw;
           height: 4.06vw;
           background-size: 100% 100%;
-          margin: 1vh 0 0 1vw;
+          margin: 0.5vw 0 0 1vw;
           background-repeat: no-repeat;
           background-image: url("../../assets/image/environment/circle@2x.png");
         }

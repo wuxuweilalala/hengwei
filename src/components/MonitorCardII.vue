@@ -3,7 +3,7 @@
         <!--        左侧-->
         <div class="left f_c_center">
             <ul class="leftSide">
-                <li v-for="(item,index) in districtList" :key="index" >
+                <li v-for="(item,index) in districtList.list" :key="index" >
                     <template v-if="index%2==0">
                         {{item.label}} {{item.value}}
                     </template>
@@ -15,9 +15,9 @@
         <div class="pie f_center">
             <div>
                 <basicPieIII  w="3.49vw" h="3.49vw"
-                              :value="classObj.value"
-                              :rate="classObj.rate"
-                              :areaName="classObj.label"
+                              :value="districtList.value"
+                              :rate="parseInt(districtList.rate)"
+                              :areaName="districtList.label"
                               chartStyle="2"
                 />
             </div>
@@ -26,7 +26,7 @@
         <div class="right  f_c_center">
             <div class="right_bg"></div>
             <ul class="rightSide">
-                <li v-for="(item,index) in districtList" :key="index">
+                <li v-for="(item,index) in districtList.list" :key="index">
                     <template v-if="index%2!=0">
                         {{item.label}} {{item.value}}
                     </template>
@@ -44,9 +44,13 @@
             basicPieIII
         },
         props: {
-            districtList:Array,
+            districtList:Object,
             classObj:Object
         },
+      mounted(){
+        //   console.log(this.classObj)
+        // console.log(this.districtList)
+      }
     }
 </script>
 

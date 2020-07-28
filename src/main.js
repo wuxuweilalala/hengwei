@@ -6,7 +6,8 @@ import {Pagination,DatePicker} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import '../src/assets/css/_reset.scss'
 import '../src/assets/css/base.scss'
-
+require('echarts-extension-amap');
+import { Loading } from 'element-ui';
 
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/css/swiper.css'
@@ -23,7 +24,7 @@ Vue.prototype.$del = del
 import VueAxios from 'vue-axios'
 
 
-Vue.use(VueAxios, axios).use(Pagination).use(DatePicker).use(VueAwesomeSwiper)
+Vue.use(VueAxios, axios).use(Pagination).use(DatePicker).use(VueAwesomeSwiper).use(Loading)
 new Vue({
     router,
     store,

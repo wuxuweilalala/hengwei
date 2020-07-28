@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "d3-geo": "^1.11.3",
     "echarts": "^4.8.0",
+    "echarts-extension-amap": "^1.4.1",
     "echarts-gl": "^1.1.1",
     "echarts-liquidfill": "^2.0.6",
     "element-ui": "^2.13.2",

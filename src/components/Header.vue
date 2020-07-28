@@ -103,7 +103,7 @@
         watch: {
             $route: {
                 handler: function(val, oldVal){  //路由导航栏
-                    console.log('val',val.meta.name)
+                    // console.log('val',val.meta.name)
                     if (val.meta.name === '表格页面') return
                     let item=val.meta;
                     // debugger

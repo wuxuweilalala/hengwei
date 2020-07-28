@@ -27,7 +27,7 @@
 
                 </ul>
             </div>
-            <div class="ranking f_r_between f_c_center">
+            <div  class="ranking f_r_between f_c_center">
                 <div class="left">
                     <div class="dotIcon"></div>
                     <div class="text">监控点污染排名</div>
@@ -38,6 +38,7 @@
                             :dropdownOptionListStyle="dropdownOptionListStyle"
                             :dropdownItem="dropdownItem"
                             @changeSelectItemed="changecity"
+                            :current="current"
                     ></DropDownComponent>
 <!--                    因子选择<i class="pullIcon ICON"></i>-->
                 </div>
@@ -55,8 +56,8 @@
         <div class="map">
             <ToggleMap :id="'atmosphere'" />
             <div class="mapWarnTips">
-                <Swiper :options="swiperOption"  v-if="[1,1,1,1,1,1]">
-                    <template v-for="(item, index) in ['1','1','1','1','1','1']">
+                <Swiper :options="swiperOption" >
+                    <template v-for="(item, index) in msgForecast">
                         <swiper-slide :key="index">
                             <WarnTips :msgForecast="item" />
                         </swiper-slide>
@@ -66,10 +67,10 @@
         </div>
 <!--        街道、社区、工地空气质量预报-->
         <div class="airForecast bg_c">
-            <chart-title :title="'街道、社区、工地空气质量预报'" class="p_0.52" w="30%"/>
+            <chart-title :title="'空气质量预报'" class="p_0.52" w="30%"/>
             <ul class="flex">
                 <li class="chartBg_img AQI-chart-pie " v-for="(item,index) in this.forefcastObj.forecastTable" :key="index">
-                    <div class="date">{{item.data}}</div>
+                    <div class="date">{{item.date}}</div>
                     <div class="chart">
                         <div class="ab_center">
                             <basicPieII w="6.94vh" h="7.04vh" :value="item.rate" :text="item.gradeText" :grade="item.grade" />
@@ -149,6 +150,7 @@
         </div>
       </div>
     </page-layout>
+    <Loading :requst-num="5" :loadings="loadings"></Loading>
   </div>
 </template>
 
@@ -169,6 +171,7 @@ import SelectComponent from '../../components/common/SelectComponent'
 import WarnTips from '../../components/warnTips'
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 import {effluent_swiperOption, forecast_swiperOption} from '../../components/common/swiperOption'
+import Loading from '../../components/loading';
 
 export default {
   name: "Atmosphere",
@@ -185,7 +188,8 @@ export default {
       SelectComponent,
       WarnTips,
       Swiper,
-      SwiperSlide
+      SwiperSlide,
+      Loading,
   },
     data() {
       return {
@@ -262,7 +266,13 @@ export default {
               textAlign:'left'
           }, // 设置宽度和高度
           dropdownItem:{},
-          showBasicLine:false
+          showBasicLine:false,
+          current: 0,
+          loading: true,
+          loadWidth: 0,
+          parcent: '0%',
+          loadings: [],
+          msgForecast:['',''],//滚动警告列表
       }
     },
     computed: {
@@ -290,6 +300,9 @@ export default {
             },
             set(val) {}
         },
+        width() {
+            return this.loadWidth + 'vw'
+        }
     },
     created() {
       this.currYear= Number(new Date().getFullYear())
@@ -301,7 +314,7 @@ export default {
             handler(val) {
                 this.matchMonth(val)
             }
-        }
+        },
     },
     methods: {
         showCalendaFn(bol) {
@@ -350,12 +363,13 @@ export default {
             this.getTrends()
             this.getQuality()
         },
-        getWatersumaryall() {
+        getWatersumaryall() { //问题 4.1 监控点污染排名
             this.$get('/i401AirQualityMonitoring').then(res => {
                 if (res.code == 0) {
                     // console.log(1111,res.data)
                     this.aqiInfoObj =  res.data
                     this.dataDispose(1,res.data.aqiRankList[0].aqiRankTable)
+                    this.loadings.push(true)
                 } else {
                     console.log(res.err_msg)
                 }
@@ -363,11 +377,14 @@ export default {
         },
         getWarnForecast() {
             this.$get('/i402AreaWarnForecast').then(res => {
+
                 if (res.code == 0) {
+                    this.msgForecast=res.data.msgForecast
                     this.forefcastObj =  res.data
                     this.dataDispose(2,res.data.warnTable)
+                    this.loadings.push(true)
                 } else {
-                    console.log(res.err_msg)
+                    // console.log(res.err_msg)
                 }
             })
         },
@@ -379,9 +396,10 @@ export default {
             this.$get('/i403AQICalendar',params).then(res => {
                 if (res.code == 0) {
                     this.calendarArr =  res.data
+                    this.loadings.push(true)
                     // console.log('日历',res.data)
                 } else {
-                    console.log(res.err_msg)
+                    // console.log(res.err_msg)
                 }
                 this.showCalendar=true
             })
@@ -390,6 +408,7 @@ export default {
             this.$get('/i404AnnualTargetsTrends').then(res => {
                 if (res.code == 0) {
                     this.yDataArr =  res.data
+                    this.loadings.push(true)
                 } else {
                     console.log(res.err_msg)
                 }
@@ -403,8 +422,9 @@ export default {
                     this.airReach.selectOption = {
                         placeholder: res.data.currentSelected.label
                     }
+                    this.loadings.push(true)
                 } else {
-                    console.log(res.err_msg)
+                    // console.log(res.err_msg)
                 }
                 this.showAirReach=true
                 this.showBasicLine=true
@@ -431,7 +451,7 @@ export default {
             }
         },
         getMatchArr(arr,key) {
-            console.log(arr,key)
+            // console.log(arr,key)
             for (let i = 0;i<arr.length ; i++) {
                 if (arr[i].lineLabel === key) {
                     return arr[i]
@@ -818,4 +838,5 @@ export default {
             align-items: center;
         }
     }
+
 </style>

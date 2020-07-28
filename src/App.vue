@@ -30,7 +30,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: url("../src/assets/image/bg.png") no-repeat;
+  background: url("./assets/image/bg.png") no-repeat;
   background-size: 100% 100%;
   overflow: hidden;
 }
